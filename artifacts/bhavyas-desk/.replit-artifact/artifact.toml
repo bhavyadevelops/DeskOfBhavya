@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Bhavya's Desk"
+version = "1.0.0"
+id = "artifacts/bhavyas-desk"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19913
+
+[services.development]
+run = "pnpm --filter @workspace/bhavyas-desk run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bhavyas-desk", "run", "build" ]
+publicDir = "artifacts/bhavyas-desk/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19913"
+BASE_PATH = "/"

@@ -1,0 +1,544 @@
+# YOUR DESK — PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+## ROLE
+
+You are a world-class interactive web experience designer and no-code/full-stack product builder.
+
+Your task is to design and develop a cinematic, interactive, desk-based portfolio web application called **“Your Desk”**, beginning with the first version called:
+
+# “Bhavya’s Desk”
+
+This is NOT a traditional portfolio website.
+
+It is a highly immersive, emotionally personalized, interactive digital workspace where a visitor experiences the creator’s projects, personality, achievements, goals, notes, and workflow through objects placed on a virtual desk.
+
+The product should feel:
+
+* immersive
+* elegant
+* cinematic
+* human
+* interactive
+* memorable
+* premium
+* emotionally alive
+
+The experience should NOT feel:
+
+* childish
+* cluttered
+* cartoonish
+* gimmicky
+* overly gamified
+* visually noisy
+
+The desk should feel like entering a real creator’s world.
+
+---
+
+# PRIMARY OBJECTIVE
+
+Create a highly polished MVP of “Bhavya’s Desk” that:
+
+* impresses recruiters
+* creates emotional memorability
+* showcases projects uniquely
+* allows exploration through interaction
+* feels alive and premium
+* demonstrates creativity + technical thinking
+
+This MVP should act as:
+
+* portfolio
+* digital identity
+* interactive resume
+* creative workspace
+* storytelling experience
+
+---
+
+# CORE PRODUCT CONCEPT
+
+The entire interface is represented as a physical desk viewed from a top/angled perspective.
+
+Every desk object acts as an interactive module.
+
+Examples:
+
+* laptop = projects
+* phone = contact/socials
+* sticky notes = current tasks
+* books = knowledge/journal system
+* papers = ideas/blogs/research
+* achievement frames = awards/certifications
+* digital clock = live dynamic element
+* pen = interaction/edit tool
+* water bottle = aesthetic/personal touch
+
+The desk itself is the navigation system.
+
+There should NOT be traditional navbar-heavy website behavior.
+
+Navigation should happen naturally through desk interactions.
+
+---
+
+# TARGET EXPERIENCE
+
+When a recruiter or visitor opens the website, they should feel:
+
+“Wait… this is DIFFERENT.”
+
+The goal is to create curiosity and exploration.
+
+The visitor should spend time interacting with objects naturally.
+
+The experience should feel like exploring the creator’s real workspace.
+
+---
+
+# DESIGN LANGUAGE
+
+## VISUAL STYLE
+
+Use:
+
+* realistic but stylized design
+* cinematic lighting
+* soft shadows
+* depth
+* layered composition
+* subtle perspective
+* ambient realism
+* elegant textures
+* smooth modern UI
+
+Avoid:
+
+* cartoon aesthetics
+* excessive neon
+* overwhelming animations
+* heavy gamer aesthetics
+* visual chaos
+
+Style inspiration:
+
+* Apple product smoothness
+* cozy productivity spaces
+* cinematic desk setups
+* modern minimalist realism
+
+---
+
+# DESK LAYOUT
+
+The desk should contain the following main sections:
+
+## TOP LEFT — TASK PANEL
+
+A sticky-note based productivity section.
+
+Features:
+
+* draggable sticky notes
+* double-click to mark complete
+* strike-through completion animation
+* click to edit note
+* smooth hover animations
+* ability to pin notes
+* “Current Focus”
+* “Currently Building”
+* “Learning Right Now”
+
+There should also be:
+
+* stacked sticky notes
+* clicking stack expands all tasks
+
+Optional:
+
+* mini calendar beside task area
+
+---
+
+# TOP RIGHT — ACHIEVEMENT GALLERY
+
+A framed/polaroid-based achievement showcase.
+
+Purpose:
+Display:
+
+* certifications
+* achievements
+* wins
+* recognitions
+* memories
+
+Requirements:
+
+* image upload support
+* multiple frames/polaroids
+* subtle hover effect
+* click to expand
+* smooth zoom animation
+
+Should feel:
+
+* personal
+* memory-oriented
+* story-driven
+
+NOT like a boring certificate grid.
+
+---
+
+# CENTER — MAIN DESK AREA
+
+This is the emotional core of the experience.
+
+Contains:
+
+* laptop
+* books
+* scattered papers
+* phone
+* water bottle
+* pen
+* decorative desk objects
+
+The arrangement should feel natural and alive.
+
+---
+
+# LAPTOP MODULE — PROJECT HUB
+
+The laptop is the primary portfolio system.
+
+Interaction:
+
+* clicking laptop opens immersive project UI
+* should feel like opening an actual device/system
+
+Contains:
+
+* projects
+* demos
+* GitHub links
+* project details
+* tech stack
+* images/videos
+* AI/ML experiments later
+
+Animations:
+
+* smooth open transition
+* glowing screen activation
+* elegant motion
+
+This is the “professional identity” area.
+
+---
+
+# PHONE MODULE — CONTACT + SOCIALS
+
+The phone should open like a real mobile UI.
+
+Contains:
+
+* email
+* LinkedIn
+* GitHub
+* contact form
+* resume download
+* social profiles
+
+Optional:
+Fake interactive messages or notifications for immersion.
+
+Example:
+“Recruiter viewed your desk.”
+
+The phone should feel fun but professional.
+
+---
+
+# BOOKS MODULE — JOURNAL + KNOWLEDGE SYSTEM
+
+This is one of the most important features.
+
+Books represent:
+
+* learning
+* thoughts
+* study notes
+* personal growth
+* journey documentation
+
+When clicking a book:
+
+* it opens interactively
+* pages can turn smoothly
+* users can navigate through sections
+
+Features required:
+
+* text writing inside books
+* voice dictation support
+* image upload inside pages
+* notes support
+* study journal entries
+* progress documentation
+* embedded visual references
+
+The creator should be able to:
+
+* dictate thoughts by voice
+* automatically convert speech to text
+* organize content into pages
+
+The books should feel like:
+
+* real journals
+* evolving knowledge archives
+* personal research logs
+
+NOT like plain text documents.
+
+---
+
+# SCATTERED PAPERS MODULE
+
+Loose papers spread around the desk.
+
+Each paper can represent:
+
+* startup ideas
+* mini blogs
+* current thoughts
+* plans
+* philosophy snippets
+* research ideas
+
+Interactions:
+
+* pick up/open paper
+* edit content
+* flip paper
+* pin/unpin
+
+The papers should make the desk feel:
+
+* active
+* creative
+* unfinished in a beautiful way
+
+---
+
+# PEN TOOL
+
+The pen is interactive.
+
+Possible behaviors:
+
+* click pen to enable edit mode
+* use pen to edit papers/notes
+* scribble mode
+* handwritten effect option
+
+This creates magical object interaction between desk elements.
+
+---
+
+# DIGITAL CLOCK
+
+Aesthetic digital desk clock.
+
+Features:
+
+* real-time sync
+* ambient time display
+* optional date/weather later
+
+Future possibility:
+Desk ambience changes depending on real-world time:
+
+* morning lighting
+* sunset tones
+* night mode
+
+Clock should feel alive.
+
+---
+
+# WATER BOTTLE + DECOR ITEMS
+
+Purpose:
+Humanize the desk.
+
+Not purely decorative.
+
+Can later represent:
+
+* energy/battery
+* hydration streak
+* personality
+
+Decor elements should create realism and immersion.
+
+---
+
+# DESK VISITING FEATURE
+
+VERY IMPORTANT FEATURE.
+
+Users should be able to:
+
+* share their desk with others
+* recruiters can visit the desk interactively
+* desk becomes a live portfolio experience
+
+Requirements:
+
+* shareable public link
+* interactive viewing mode
+* smooth loading
+* cinematic first impression
+* exploration freedom
+
+The visitor should feel like:
+they are entering someone’s creative workspace.
+
+Optional future ideas:
+
+* guest notes
+* recruiter reactions
+* collaborative desks
+* multiplayer workspace visits
+
+---
+
+# USER EXPERIENCE GOALS
+
+The experience must prioritize:
+
+* smoothness
+* immersion
+* emotional design
+* curiosity
+* exploration
+* delight
+
+The user should WANT to click objects.
+
+Every interaction should feel intentional.
+
+---
+
+# ANIMATION STYLE
+
+Animations must be:
+
+* smooth
+* premium
+* soft
+* responsive
+* cinematic
+
+Avoid:
+
+* bouncy childish motion
+* excessive flashy transitions
+
+Preferred:
+
+* easing
+* depth motion
+* subtle scaling
+* hover elevation
+* parallax movement
+* ambient object drifting
+
+---
+
+# AUDIO (OPTIONAL MVP)
+
+Optional:
+
+* subtle desk ambience
+* paper sounds
+* typing sounds
+* page flip sounds
+
+Must remain elegant and not distracting.
+
+---
+
+# RESPONSIVENESS
+
+Desktop-first experience.
+
+Mobile adaptation can be simplified initially.
+
+Desktop experience is the priority because recruiters and professionals will mainly view it there.
+
+---
+
+# PERFORMANCE REQUIREMENTS
+
+Despite immersive visuals:
+
+* site must remain smooth
+* animations optimized
+* loading efficient
+* no laggy interactions
+
+Performance is part of the premium feel.
+
+---
+
+# MVP PRIORITY FEATURES
+
+Build FIRST:
+
+1. Interactive desk
+2. Laptop project system
+3. Sticky note tasks
+4. Achievement gallery
+5. Interactive books
+6. Desk visiting/shareable link
+7. Smooth animations
+8. Ambient immersive design
+
+Secondary features can come later.
+
+---
+
+# FUTURE EXPANSION POSSIBILITY
+
+Potential future roadmap:
+
+* multiple desk themes
+* AI assistant
+* multiplayer desks
+* collaborative workspaces
+* recruiter analytics
+* live GitHub sync
+* productivity integrations
+* AI-generated summaries
+* room-scale environments
+* customizable desk layouts
+* marketplace/templates
+
+---
+
+# FINAL PRODUCT FEEL
+
+The final experience should feel like:
+
+“A creator’s mind represented as a living workspace.”
+
+It should emotionally stand out from traditional portfolio websites.
+
+The goal is not just information delivery.
+
+The goal is immersion, identity, and memorability.
