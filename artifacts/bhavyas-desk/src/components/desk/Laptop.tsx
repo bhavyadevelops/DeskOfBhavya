@@ -43,120 +43,194 @@ const PROJECTS = [
 export default function Laptop() {
   const [open, setOpen] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
-  const [direction, setDirection] = useState(1);
-
-  const navigate = (dir: number) => {
-    setDirection(dir);
-    setActiveProject(p => (p + dir + PROJECTS.length) % PROJECTS.length);
-  };
 
   const proj = PROJECTS[activeProject];
 
   return (
     <>
+      {/* Desk object — closed laptop */}
       <motion.div
-        className="absolute cursor-pointer"
-        style={{ top: "30%", left: "24%" }}
-        initial={{ opacity: 0, scale: 0.9 }}
+        className="absolute cursor-pointer select-none"
+        style={{ top: "32%", left: "26%" }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3, duration: 0.7 }}
-        onClick={() => !open && setOpen(true)}
+        transition={{ delay: 0.3, duration: 0.6 }}
+        onClick={() => setOpen(true)}
+        whileHover={{ y: -3 }}
         data-testid="laptop"
       >
-        {/* Laptop body — perspective view */}
-        <div style={{ perspective: 600 }}>
-          {/* Screen lid */}
-          <motion.div
-            animate={{ rotateX: open ? -82 : 0 }}
-            transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+        {/* Closed lid */}
+        <div
+          style={{
+            width: 200,
+            height: 6,
+            background: "linear-gradient(180deg, #3a3a3a 0%, #252525 100%)",
+            borderRadius: "4px 4px 0 0",
+            boxShadow: "0 -1px 0 rgba(255,255,255,0.06) inset",
+          }}
+        />
+        {/* Base / keyboard */}
+        <div
+          style={{
+            width: 200,
+            height: 12,
+            background: "linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%)",
+            borderRadius: "0 0 5px 5px",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
+            position: "relative",
+          }}
+        >
+          <div
             style={{
-              transformOrigin: "bottom center",
-              width: 240,
-              height: open ? 160 : 8,
-              background: open
-                ? "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)"
-                : "linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%)",
-              borderRadius: "8px 8px 0 0",
-              overflow: "hidden",
-              boxShadow: open
-                ? "0 -4px 30px rgba(0,0,0,0.5), inset 0 0 0 2px rgba(255,255,255,0.05)"
-                : "none",
-              position: "relative",
+              position: "absolute",
+              width: 50,
+              height: 6,
+              background: "rgba(255,255,255,0.04)",
+              borderRadius: 2,
+              border: "1px solid rgba(255,255,255,0.06)",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%,-50%)",
             }}
-          >
-            {open && (
-              <div className="absolute inset-0 flex flex-col" style={{ padding: "12px" }}>
-                {/* Screen header */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 rounded-full" style={{ background: "#ff5f57" }} />
-                    <div className="w-2 h-2 rounded-full" style={{ background: "#ffbd2e" }} />
-                    <div className="w-2 h-2 rounded-full" style={{ background: "#28c940" }} />
-                  </div>
-                  <div className="font-mono text-xs" style={{ color: "rgba(255,255,255,0.3)", fontSize: "8px" }}>
-                    bhavya — projects
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setOpen(false); }}
-                    className="font-mono text-xs hover:text-white transition-colors"
-                    style={{ color: "rgba(255,255,255,0.3)", fontSize: "8px" }}
-                    data-testid="laptop-close"
-                  >
-                    esc
-                  </button>
-                </div>
+          />
+        </div>
+        <div
+          className="font-mono text-center mt-1"
+          style={{ color: "rgba(255,255,255,0.25)", fontSize: "8px", letterSpacing: "0.1em" }}
+        >
+          click to open
+        </div>
+      </motion.div>
 
-                {/* Project content */}
-                <AnimatePresence mode="wait" custom={direction}>
+      {/* Full-screen modal */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center"
+            style={{ background: "rgba(5,3,0,0.88)", backdropFilter: "blur(12px)", zIndex: 100 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpen(false)}
+            data-testid="laptop-modal-overlay"
+          >
+            <motion.div
+              className="relative flex overflow-hidden"
+              style={{
+                width: 720,
+                height: 460,
+                background: "#0f0f14",
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 40px 100px rgba(0,0,0,0.8)",
+              }}
+              initial={{ scale: 0.88, y: 24 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.88, y: 24 }}
+              transition={{ type: "spring", stiffness: 220, damping: 24 }}
+              onClick={(e) => e.stopPropagation()}
+              data-testid="laptop-modal"
+            >
+              {/* Title bar */}
+              <div
+                className="absolute top-0 left-0 right-0 flex items-center justify-between"
+                style={{
+                  padding: "10px 16px",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  background: "rgba(255,255,255,0.02)",
+                  zIndex: 2,
+                }}
+              >
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="w-3 h-3 rounded-full transition-opacity hover:opacity-70"
+                    style={{ background: "#ff5f57" }}
+                    data-testid="laptop-close"
+                  />
+                  <div className="w-3 h-3 rounded-full" style={{ background: "#ffbd2e" }} />
+                  <div className="w-3 h-3 rounded-full" style={{ background: "#28c940" }} />
+                </div>
+                <div className="font-mono text-xs" style={{ color: "rgba(255,255,255,0.25)", fontSize: "10px" }}>
+                  bhavya — projects
+                </div>
+                <div style={{ width: 48 }} />
+              </div>
+
+              {/* Sidebar */}
+              <div
+                className="flex flex-col"
+                style={{
+                  width: 200,
+                  marginTop: 37,
+                  borderRight: "1px solid rgba(255,255,255,0.06)",
+                  padding: "12px 0",
+                  background: "rgba(255,255,255,0.015)",
+                }}
+              >
+                <div
+                  className="font-mono px-4 mb-3"
+                  style={{ color: "rgba(255,255,255,0.2)", fontSize: "9px", letterSpacing: "0.15em" }}
+                >
+                  PROJECTS
+                </div>
+                {PROJECTS.map((p) => (
+                  <button
+                    key={p.id}
+                    className="text-left px-4 py-2.5 transition-all"
+                    style={{
+                      background: activeProject === p.id - 1 ? `${p.accent}18` : "transparent",
+                      borderLeft: activeProject === p.id - 1 ? `2px solid ${p.accent}` : "2px solid transparent",
+                      color: activeProject === p.id - 1 ? "#fff" : "rgba(255,255,255,0.4)",
+                    }}
+                    onClick={() => setActiveProject(p.id - 1)}
+                    data-testid={`project-tab-${p.id}`}
+                  >
+                    <div className="font-sans text-sm">{p.name}</div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Project detail */}
+              <div className="flex-1 flex flex-col" style={{ marginTop: 37, padding: "28px 32px", overflow: "auto" }}>
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={proj.id}
-                    custom={direction}
-                    initial={{ x: direction > 0 ? 40 : -40, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: direction > 0 ? -40 : 40, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className="flex-1 flex flex-col"
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex flex-col h-full"
                   >
-                    <div
-                      className="w-full rounded-sm mb-1.5"
-                      style={{ height: 3, background: proj.accent }}
-                    />
-                    <div
-                      className="font-serif font-bold leading-tight"
-                      style={{ color: "#fff", fontSize: "13px" }}
-                    >
+                    <div className="w-8 h-0.5 mb-4 rounded-full" style={{ background: proj.accent }} />
+                    <h2 className="font-serif text-2xl font-bold mb-3" style={{ color: "#fff" }}>
                       {proj.name}
-                    </div>
-                    <div
-                      className="font-sans mt-1 leading-snug"
-                      style={{ color: "rgba(255,255,255,0.65)", fontSize: "7.5px", flex: 1 }}
-                    >
+                    </h2>
+                    <p className="font-sans text-sm leading-relaxed flex-1" style={{ color: "rgba(255,255,255,0.6)" }}>
                       {proj.desc}
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-1.5">
-                      {proj.stack.map(t => (
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-5">
+                      {proj.stack.map((t) => (
                         <span
                           key={t}
-                          className="font-mono rounded-sm px-1"
+                          className="font-mono text-xs px-2 py-0.5 rounded"
                           style={{
-                            fontSize: "6px",
-                            background: `${proj.accent}33`,
+                            background: `${proj.accent}22`,
                             color: proj.accent,
-                            border: `1px solid ${proj.accent}55`,
+                            border: `1px solid ${proj.accent}44`,
                           }}
                         >
                           {t}
                         </span>
                       ))}
                     </div>
-                    <div className="flex gap-2 mt-1.5">
+                    <div className="flex gap-4 mt-5">
                       <a
                         href={proj.github}
                         target="_blank"
                         rel="noreferrer"
-                        onClick={e => e.stopPropagation()}
-                        className="font-mono hover:text-white transition-colors"
-                        style={{ color: "rgba(255,255,255,0.4)", fontSize: "7px", textDecoration: "underline" }}
+                        className="font-mono text-sm underline transition-opacity hover:opacity-60"
+                        style={{ color: "rgba(255,255,255,0.4)" }}
                         data-testid={`project-github-${proj.id}`}
                       >
                         GitHub
@@ -166,9 +240,8 @@ export default function Laptop() {
                           href={proj.demo}
                           target="_blank"
                           rel="noreferrer"
-                          onClick={e => e.stopPropagation()}
-                          className="font-mono hover:text-white transition-colors"
-                          style={{ color: proj.accent, fontSize: "7px", textDecoration: "underline" }}
+                          className="font-mono text-sm underline transition-opacity hover:opacity-60"
+                          style={{ color: proj.accent }}
                           data-testid={`project-demo-${proj.id}`}
                         >
                           Live Demo
@@ -177,83 +250,11 @@ export default function Laptop() {
                     </div>
                   </motion.div>
                 </AnimatePresence>
-
-                {/* Nav dots */}
-                <div className="flex items-center justify-between mt-1">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); navigate(-1); }}
-                    className="font-mono hover:text-white transition-colors"
-                    style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}
-                    data-testid="laptop-prev"
-                  >
-                    ‹
-                  </button>
-                  <div className="flex gap-1">
-                    {PROJECTS.map((_, i) => (
-                      <div
-                        key={i}
-                        className="rounded-full transition-all"
-                        style={{
-                          width: i === activeProject ? 12 : 4,
-                          height: 4,
-                          background: i === activeProject ? proj.accent : "rgba(255,255,255,0.2)",
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); navigate(1); }}
-                    className="font-mono hover:text-white transition-colors"
-                    style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}
-                    data-testid="laptop-next"
-                  >
-                    ›
-                  </button>
-                </div>
               </div>
-            )}
-          </motion.div>
-
-          {/* Base/keyboard */}
-          <div
-            style={{
-              width: 240,
-              height: 14,
-              background: "linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%)",
-              borderRadius: "0 0 6px 6px",
-              boxShadow: "0 6px 24px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset",
-              position: "relative",
-            }}
-          >
-            {/* Trackpad */}
-            <div
-              className="absolute"
-              style={{
-                width: 60,
-                height: 8,
-                background: "rgba(255,255,255,0.05)",
-                borderRadius: 2,
-                border: "1px solid rgba(255,255,255,0.08)",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%,-50%)",
-              }}
-            />
-          </div>
-        </div>
-
-        {!open && (
-          <motion.div
-            className="font-sans text-center mt-1"
-            style={{ color: "rgba(255,255,255,0.3)", fontSize: "9px" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-          >
-            click to open
+            </motion.div>
           </motion.div>
         )}
-      </motion.div>
+      </AnimatePresence>
     </>
   );
 }

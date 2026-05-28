@@ -18,7 +18,7 @@ export default function Clock() {
   return (
     <motion.div
       className="absolute"
-      style={{ top: "6%", right: "18%" }}
+      style={{ top: "5%", right: "2%" }}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.6 }}

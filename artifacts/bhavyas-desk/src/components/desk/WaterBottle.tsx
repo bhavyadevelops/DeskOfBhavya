@@ -4,7 +4,7 @@ export default function WaterBottle() {
   return (
     <motion.div
       className="absolute cursor-pointer select-none"
-      style={{ top: "65%", left: "8%" }}
+      style={{ top: "74%", left: "78%" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.4, duration: 0.5 }}

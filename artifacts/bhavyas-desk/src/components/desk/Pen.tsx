@@ -23,8 +23,8 @@ export default function Pen({ scribbleMode, setScribbleMode }: PenProps) {
       ctx.beginPath();
       ctx.moveTo(lastPoint.current.x, lastPoint.current.y);
       ctx.lineTo(x, y);
-      ctx.strokeStyle = "rgba(245,166,35,0.6)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(245,166,35,0.7)";
+      ctx.lineWidth = 2.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.stroke();
@@ -60,47 +60,59 @@ export default function Pen({ scribbleMode, setScribbleMode }: PenProps) {
     };
   }, [scribbleMode, draw, startDraw, endDraw]);
 
-  const handleEscape = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Escape" && scribbleMode) setScribbleMode(false);
-  }, [scribbleMode, setScribbleMode]);
+  const handleEscape = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && scribbleMode) setScribbleMode(false);
+    },
+    [scribbleMode, setScribbleMode]
+  );
 
   useEffect(() => {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [handleEscape]);
 
-  const clearCanvas = () => {
+  const clearCanvas = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
 
+  const exitScribble = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setScribbleMode(false);
+  };
+
   return (
     <>
-      {/* Scribble canvas overlay */}
+      {/* Full-screen drawing canvas */}
       {scribbleMode && (
         <canvas
           ref={canvasRef}
-          className="fixed inset-0 z-40"
-          style={{ cursor: "crosshair", pointerEvents: "all" }}
+          className="fixed inset-0"
+          style={{ cursor: "crosshair", pointerEvents: "all", zIndex: 90 }}
           width={window.innerWidth}
           height={window.innerHeight}
           data-testid="scribble-canvas"
         />
       )}
 
+      {/* Toolbar — sits above canvas */}
       {scribbleMode && (
         <div
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-3"
-          style={{ backdropFilter: "blur(8px)" }}
+          className="fixed left-1/2 -translate-x-1/2 flex gap-3 items-center"
+          style={{ bottom: 32, zIndex: 95, pointerEvents: "all" }}
+          onMouseDown={(e) => e.stopPropagation()}
         >
           <motion.button
             className="font-mono text-xs rounded-md px-4 py-2"
             style={{
-              background: "rgba(20,15,5,0.9)",
-              border: "1px solid rgba(245,166,35,0.4)",
-              color: "#F5A623",
+              background: "rgba(20,15,5,0.92)",
+              border: "1px solid rgba(245,166,35,0.35)",
+              color: "rgba(245,166,35,0.7)",
+              cursor: "pointer",
             }}
             onClick={clearCanvas}
             whileHover={{ scale: 1.05 }}
@@ -111,11 +123,12 @@ export default function Pen({ scribbleMode, setScribbleMode }: PenProps) {
           <motion.button
             className="font-mono text-xs rounded-md px-4 py-2"
             style={{
-              background: "rgba(245,166,35,0.15)",
+              background: "rgba(245,166,35,0.18)",
               border: "1px solid rgba(245,166,35,0.5)",
               color: "#F5A623",
+              cursor: "pointer",
             }}
-            onClick={() => setScribbleMode(false)}
+            onClick={exitScribble}
             whileHover={{ scale: 1.05 }}
             data-testid="scribble-exit"
           >
@@ -136,13 +149,13 @@ export default function Pen({ scribbleMode, setScribbleMode }: PenProps) {
         data-testid="pen"
       >
         <svg width="8" height="80" viewBox="0 0 8 80" fill="none">
-          <rect x="1" y="8" width="6" height="60" rx="1" fill="url(#penBody)" />
+          <rect x="1" y="8" width="6" height="60" rx="1" fill="url(#penBodyFix)" />
           <polygon points="1,68 7,68 4,78" fill="#c0a060" />
           <polygon points="2.5,72 5.5,72 4,77" fill="#e8c880" />
           <rect x="1" y="5" width="6" height="5" rx="0.5" fill="#888" />
           <ellipse cx="4" cy="4" rx="3" ry="2" fill="#d44" />
           <defs>
-            <linearGradient id="penBody" x1="0" y1="0" x2="8" y2="0" gradientUnits="userSpaceOnUse">
+            <linearGradient id="penBodyFix" x1="0" y1="0" x2="8" y2="0" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stopColor="#1a3a8a" />
               <stop offset="40%" stopColor="#2a5aaa" />
               <stop offset="100%" stopColor="#1a3a8a" />
@@ -151,7 +164,12 @@ export default function Pen({ scribbleMode, setScribbleMode }: PenProps) {
         </svg>
         <div
           className="font-mono text-center"
-          style={{ color: "rgba(255,255,255,0.25)", fontSize: "7px", marginTop: 2, writingMode: "vertical-rl" }}
+          style={{
+            color: scribbleMode ? "#F5A623" : "rgba(255,255,255,0.25)",
+            fontSize: "7px",
+            marginTop: 2,
+            writingMode: "vertical-rl",
+          }}
         >
           {scribbleMode ? "drawing..." : "scribble"}
         </div>
