@@ -17,133 +17,322 @@ const INITIAL_NOTES: Note[] = [
   { id: 4, label: "Next Up", text: "Open source QuantumDB", color: "#FFD6A5", rotation: 3, done: false },
 ];
 
-const STACK_NOTES = [
-  { id: 10, color: "#F9E97A" },
-  { id: 11, color: "#A8E6B0" },
-  { id: 12, color: "#FFD6A5" },
-];
+const NOTE_COLORS = ["#F9E97A", "#A8E6B0", "#FFD6A5", "#FFC8C8", "#C8D8FF"];
+let nextId = 100;
 
 export default function StickyNotes() {
   const [notes, setNotes] = useState<Note[]>(INITIAL_NOTES);
-  const [expanded, setExpanded] = useState(false);
+  const [managerOpen, setManagerOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const textRef = useRef<HTMLDivElement>(null);
+  const [editingLabel, setEditingLabelId] = useState<number | null>(null);
+  const [newText, setNewText] = useState("");
+  const newInputRef = useRef<HTMLInputElement>(null);
 
-  const toggleDone = (id: number) => {
+  const toggleDone = (id: number) =>
     setNotes(prev => prev.map(n => n.id === id ? { ...n, done: !n.done } : n));
-  };
 
-  const startEdit = (id: number, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditingId(id);
-  };
+  const deleteNote = (id: number) =>
+    setNotes(prev => prev.filter(n => n.id !== id));
 
-  const saveEdit = (id: number, val: string) => {
+  const saveText = (id: number, val: string) =>
     setNotes(prev => prev.map(n => n.id === id ? { ...n, text: val } : n));
-    setEditingId(null);
+
+  const saveLabel = (id: number, val: string) =>
+    setNotes(prev => prev.map(n => n.id === id ? { ...n, label: val } : n));
+
+  const addNote = () => {
+    if (!newText.trim()) return;
+    const color = NOTE_COLORS[nextId % NOTE_COLORS.length];
+    setNotes(prev => [
+      ...prev,
+      { id: nextId++, label: "New task", text: newText.trim(), color, rotation: (nextId % 7) - 3, done: false },
+    ]);
+    setNewText("");
+    newInputRef.current?.focus();
   };
 
   return (
-    <motion.div
-      className="absolute"
-      style={{ top: "8%", left: "4%" }}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1, duration: 0.7 }}
-    >
-      <div className="relative" style={{ width: 220 }}>
-        {/* Stack of extra notes */}
-        <motion.div
-          className="cursor-pointer relative"
-          style={{ height: 24, marginBottom: 4 }}
-          onClick={() => setExpanded(!expanded)}
-          data-testid="sticky-stack"
-        >
-          {STACK_NOTES.map((s, i) => (
+    <>
+      {/* Desk object — stacked notes */}
+      <motion.div
+        className="absolute"
+        style={{ top: "8%", left: "4%" }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.7 }}
+      >
+        <div className="relative" style={{ width: 220 }}>
+          {/* Stack / "+ more" button */}
+          <motion.div
+            className="cursor-pointer relative mb-3 flex items-center gap-2"
+            style={{ height: 26 }}
+            onClick={() => setManagerOpen(true)}
+            whileHover={{ x: 2 }}
+            data-testid="sticky-stack"
+          >
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="absolute rounded-sm"
+                style={{
+                  width: 100,
+                  height: 22,
+                  background: INITIAL_NOTES[i % INITIAL_NOTES.length].color,
+                  top: i * 2,
+                  left: i * 3,
+                  opacity: 0.65,
+                  boxShadow: "1px 2px 6px rgba(0,0,0,0.25)",
+                }}
+              />
+            ))}
             <div
-              key={s.id}
-              className="absolute rounded-sm"
-              style={{
-                width: 100,
-                height: 22,
-                background: s.color,
-                top: i * 2,
-                left: i * 3,
-                opacity: 0.7,
-                boxShadow: "1px 2px 6px rgba(0,0,0,0.25)",
-              }}
-            />
-          ))}
-          <div className="absolute left-36 top-0.5 text-xs font-sans" style={{ color: "rgba(255,255,255,0.5)" }}>
-            {expanded ? "collapse" : "+ more"}
-          </div>
-        </motion.div>
+              className="absolute font-sans text-xs"
+              style={{ left: 130, top: 4, color: "rgba(255,255,255,0.55)" }}
+            >
+              + manage
+            </div>
+          </motion.div>
 
-        <AnimatePresence>
-          {notes.map((note, i) => (
+          {/* Notes visible on desk */}
+          {notes.slice(0, 4).map((note) => (
             <motion.div
               key={note.id}
-              className="relative mb-2 rounded-sm cursor-pointer select-none"
+              className="relative mb-2 rounded-sm select-none"
               style={{
                 background: note.color,
                 rotate: note.rotation,
                 width: "100%",
-                padding: "10px 12px 14px",
+                padding: "9px 12px 12px",
                 boxShadow: "2px 4px 12px rgba(0,0,0,0.3)",
                 transformOrigin: "top left",
               }}
-              initial={expanded && i > 0 ? { opacity: 0, y: -10 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              whileHover={{ y: -4, scale: 1.02, rotate: 0, boxShadow: "4px 8px 20px rgba(0,0,0,0.4)" }}
+              whileHover={{ y: -3, rotate: 0, boxShadow: "4px 8px 20px rgba(0,0,0,0.4)" }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              onDoubleClick={() => toggleDone(note.id)}
-              onClick={(e) => startEdit(note.id, e)}
-              data-testid={`sticky-note-${note.id}`}
             >
-              <div className="text-xs font-sans font-semibold mb-1 opacity-50 uppercase tracking-wider" style={{ color: "#333" }}>
+              <div className="text-xs font-sans font-semibold mb-0.5 opacity-40 uppercase tracking-wider" style={{ color: "#333", fontSize: "9px" }}>
                 {note.label}
               </div>
-              {editingId === note.id ? (
-                <div
-                  ref={textRef}
-                  contentEditable
-                  suppressContentEditableWarning
-                  className="text-sm font-sans outline-none bg-transparent"
-                  style={{ color: "#1a1a1a", minHeight: 20 }}
-                  onBlur={(e) => saveEdit(note.id, e.currentTarget.textContent || "")}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); saveEdit(note.id, e.currentTarget.textContent || ""); } }}
-                  data-testid={`sticky-edit-${note.id}`}
-                >
-                  {note.text}
-                </div>
-              ) : (
-                <div
-                  className="text-sm font-sans relative"
-                  style={{
-                    color: "#1a1a1a",
-                    textDecoration: note.done ? "line-through" : "none",
-                    opacity: note.done ? 0.5 : 1,
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  {note.text}
-                  {note.done && (
-                    <motion.div
-                      className="absolute top-1/2 left-0 h-px w-full"
-                      style={{ background: "#555", transform: "translateY(-50%)", transformOrigin: "left" }}
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                    />
-                  )}
-                </div>
-              )}
-              <div className="text-xs mt-1 opacity-30 font-sans" style={{ color: "#333" }}>double-click to complete</div>
+              <div
+                className="text-sm font-sans"
+                style={{
+                  color: "#1a1a1a",
+                  textDecoration: note.done ? "line-through" : "none",
+                  opacity: note.done ? 0.5 : 1,
+                }}
+              >
+                {note.text}
+              </div>
             </motion.div>
           ))}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+          {notes.length > 4 && (
+            <div
+              className="font-mono text-xs cursor-pointer hover:opacity-80"
+              style={{ color: "rgba(255,255,255,0.3)", textAlign: "right", paddingRight: 4 }}
+              onClick={() => setManagerOpen(true)}
+            >
+              +{notes.length - 4} more
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Task manager modal */}
+      <AnimatePresence>
+        {managerOpen && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center"
+            style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)", zIndex: 100 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => { setManagerOpen(false); setEditingId(null); setEditingLabelId(null); }}
+          >
+            <motion.div
+              className="relative flex flex-col overflow-hidden"
+              style={{
+                width: 420,
+                maxHeight: "75vh",
+                background: "#faf7f0",
+                borderRadius: 10,
+                boxShadow: "0 32px 80px rgba(0,0,0,0.55)",
+              }}
+              initial={{ scale: 0.9, y: 16 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 16 }}
+              transition={{ type: "spring", stiffness: 220, damping: 24 }}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div
+                className="flex items-center justify-between"
+                style={{ padding: "16px 20px 12px", borderBottom: "1px solid rgba(0,0,0,0.08)" }}
+              >
+                <h2 className="font-serif text-lg font-bold" style={{ color: "#1a1a1a" }}>
+                  Tasks
+                </h2>
+                <button
+                  className="font-mono text-xs hover:opacity-50 transition-opacity"
+                  style={{ color: "#888" }}
+                  onClick={() => setManagerOpen(false)}
+                >
+                  close
+                </button>
+              </div>
+
+              {/* Note list */}
+              <div className="overflow-y-auto flex-1" style={{ padding: "8px 20px" }}>
+                <AnimatePresence>
+                  {notes.map((note) => (
+                    <motion.div
+                      key={note.id}
+                      className="flex items-start gap-3 py-3"
+                      style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10, height: 0, padding: 0, margin: 0 }}
+                      layout
+                    >
+                      {/* Color dot */}
+                      <div
+                        className="rounded-full shrink-0 mt-1"
+                        style={{ width: 10, height: 10, background: note.color, border: "1px solid rgba(0,0,0,0.1)" }}
+                      />
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        {/* Label */}
+                        {editingLabel === note.id ? (
+                          <input
+                            autoFocus
+                            className="font-sans w-full outline-none bg-transparent border-b"
+                            style={{
+                              fontSize: "10px",
+                              color: "#888",
+                              borderColor: "rgba(0,0,0,0.15)",
+                              marginBottom: 3,
+                              letterSpacing: "0.05em",
+                              textTransform: "uppercase",
+                            }}
+                            defaultValue={note.label}
+                            onBlur={e => { saveLabel(note.id, e.target.value); setEditingLabelId(null); }}
+                            onKeyDown={e => { if (e.key === "Enter") { saveLabel(note.id, (e.target as HTMLInputElement).value); setEditingLabelId(null); } }}
+                          />
+                        ) : (
+                          <div
+                            className="font-sans font-semibold cursor-text mb-0.5 uppercase tracking-wider hover:opacity-70 transition-opacity"
+                            style={{ fontSize: "10px", color: "#aaa" }}
+                            onClick={() => setEditingLabelId(note.id)}
+                          >
+                            {note.label}
+                          </div>
+                        )}
+
+                        {/* Text */}
+                        {editingId === note.id ? (
+                          <input
+                            autoFocus
+                            className="font-sans w-full outline-none bg-transparent border-b"
+                            style={{
+                              fontSize: "14px",
+                              color: "#1a1a1a",
+                              borderColor: "rgba(0,0,0,0.2)",
+                              paddingBottom: 2,
+                            }}
+                            defaultValue={note.text}
+                            onBlur={e => { saveText(note.id, e.target.value); setEditingId(null); }}
+                            onKeyDown={e => { if (e.key === "Enter") { saveText(note.id, (e.target as HTMLInputElement).value); setEditingId(null); } }}
+                          />
+                        ) : (
+                          <div
+                            className="font-sans cursor-text hover:opacity-70 transition-opacity"
+                            style={{
+                              fontSize: "14px",
+                              color: "#1a1a1a",
+                              textDecoration: note.done ? "line-through" : "none",
+                              opacity: note.done ? 0.45 : 1,
+                            }}
+                            onClick={() => setEditingId(note.id)}
+                          >
+                            {note.text}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 shrink-0 mt-1">
+                        {/* Strikethrough toggle */}
+                        <button
+                          title={note.done ? "Mark active" : "Strike through"}
+                          className="rounded transition-all hover:scale-110"
+                          style={{
+                            width: 24,
+                            height: 24,
+                            background: note.done ? "rgba(0,0,0,0.08)" : "transparent",
+                            border: "1px solid rgba(0,0,0,0.12)",
+                            color: "#888",
+                            fontSize: "11px",
+                            textDecoration: "line-through",
+                            fontFamily: "monospace",
+                          }}
+                          onClick={() => toggleDone(note.id)}
+                        >
+                          S
+                        </button>
+                        {/* Delete */}
+                        <button
+                          title="Delete"
+                          className="rounded transition-all hover:scale-110 hover:bg-red-50"
+                          style={{
+                            width: 24,
+                            height: 24,
+                            border: "1px solid rgba(0,0,0,0.12)",
+                            color: "#bbb",
+                            fontSize: "14px",
+                            lineHeight: 1,
+                          }}
+                          onClick={() => deleteNote(note.id)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {notes.length === 0 && (
+                  <div className="font-serif text-center py-10" style={{ color: "rgba(0,0,0,0.2)", fontSize: "14px" }}>
+                    No tasks. Add one below.
+                  </div>
+                )}
+              </div>
+
+              {/* Add new task */}
+              <div
+                className="flex items-center gap-2"
+                style={{ padding: "12px 20px", borderTop: "1px solid rgba(0,0,0,0.08)", background: "#f5f2eb" }}
+              >
+                <input
+                  ref={newInputRef}
+                  type="text"
+                  placeholder="Add a task..."
+                  value={newText}
+                  onChange={e => setNewText(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") addNote(); }}
+                  className="flex-1 font-sans text-sm outline-none bg-transparent"
+                  style={{ color: "#1a1a1a" }}
+                />
+                <button
+                  className="font-mono text-xs px-3 py-1.5 rounded transition-opacity hover:opacity-70"
+                  style={{ background: "#F9E97A", color: "#333", border: "1px solid rgba(0,0,0,0.1)" }}
+                  onClick={addNote}
+                >
+                  add
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

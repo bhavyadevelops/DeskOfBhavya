@@ -19,21 +19,34 @@ const INITIAL_ACHIEVEMENTS: Achievement[] = [
   { id: 3, title: "Forbes 30 Under 30", subtitle: "Technology Nominee", year: "2024", color: "#b45309", icon: "F", bg: "#6e4a1e", isLetter: true },
 ];
 
+type EditField = "title" | "subtitle" | "year" | null;
+
 export default function Achievements() {
   const [achievements, setAchievements] = useState<Achievement[]>(INITIAL_ACHIEVEMENTS);
   const [selected, setSelected] = useState<number | null>(null);
+  const [editField, setEditField] = useState<EditField>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedAchievement = achievements.find((a) => a.id === selected) ?? null;
+
+  const updateField = (field: keyof Achievement, value: string) => {
+    if (selected === null) return;
+    setAchievements(prev =>
+      prev.map(a => a.id === selected ? { ...a, [field]: value } : a)
+    );
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || selected === null) return;
     const url = URL.createObjectURL(file);
-    setAchievements((prev) =>
-      prev.map((a) => (a.id === selected ? { ...a, imageUrl: url } : a))
-    );
+    setAchievements(prev => prev.map(a => a.id === selected ? { ...a, imageUrl: url } : a));
     e.target.value = "";
+  };
+
+  const closeModal = () => {
+    setSelected(null);
+    setEditField(null);
   };
 
   return (
@@ -50,13 +63,10 @@ export default function Achievements() {
           <motion.div
             key={a.id}
             className="cursor-pointer relative"
-            style={{
-              rotate: i === 0 ? -4 : i === 1 ? 2 : -2,
-              transformOrigin: "bottom center",
-            }}
+            style={{ rotate: i === 0 ? -4 : i === 1 ? 2 : -2, transformOrigin: "bottom center" }}
             whileHover={{ y: -8, rotate: 0, scale: 1.05, boxShadow: "0 12px 30px rgba(0,0,0,0.5)" }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            onClick={() => setSelected(a.id)}
+            onClick={() => { setSelected(a.id); setEditField(null); }}
             data-testid={`achievement-${a.id}`}
           >
             <div
@@ -68,23 +78,17 @@ export default function Achievements() {
                 boxShadow: "2px 4px 16px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(0,0,0,0.1)",
               }}
             >
-              <div
-                className="rounded-sm flex items-center justify-center overflow-hidden"
-                style={{ height: 70, background: a.bg }}
-              >
+              <div className="rounded-sm flex items-center justify-center overflow-hidden" style={{ height: 70, background: a.bg }}>
                 {a.imageUrl ? (
                   <img src={a.imageUrl} alt={a.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (
-                  <span
-                    className={a.isLetter ? "font-serif font-bold text-2xl" : "text-2xl"}
-                    style={{ color: a.color }}
-                  >
+                  <span className={a.isLetter ? "font-serif font-bold text-2xl" : "text-2xl"} style={{ color: a.color }}>
                     {a.icon}
                   </span>
                 )}
               </div>
               <div className="mt-2 text-center">
-                <div className="font-mono text-xs font-bold leading-tight" style={{ color: "#1a1a1a", fontSize: "7px" }}>
+                <div className="font-mono leading-tight" style={{ color: "#1a1a1a", fontSize: "7px", fontWeight: 700 }}>
                   {a.title}
                 </div>
                 <div className="font-mono text-center mt-0.5" style={{ color: "#888", fontSize: "6px" }}>
@@ -96,14 +100,7 @@ export default function Achievements() {
         ))}
       </motion.div>
 
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleImageUpload}
-      />
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
 
       {/* Expanded modal */}
       <AnimatePresence>
@@ -114,70 +111,114 @@ export default function Achievements() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelected(null)}
+            onClick={closeModal}
             data-testid="achievement-modal-overlay"
           >
             <motion.div
               className="rounded-sm"
               style={{
                 background: "#f5f0e8",
-                padding: "24px 24px 32px",
-                width: 280,
+                padding: "24px 24px 28px",
+                width: 290,
                 boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
               }}
               initial={{ scale: 0.7, rotate: -8 }}
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0.7, rotate: 8 }}
               transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
               data-testid="achievement-modal"
             >
-              {/* Photo area — click to upload */}
+              {/* Photo — click to upload */}
               <div
-                className="rounded-sm flex items-center justify-center mb-4 relative overflow-hidden cursor-pointer group"
+                className="rounded-sm flex items-center justify-center mb-5 relative overflow-hidden cursor-pointer group"
                 style={{ height: 180, background: selectedAchievement.bg }}
                 onClick={() => fileInputRef.current?.click()}
-                title="Click to upload a photo"
+                title="Click to upload photo"
               >
                 {selectedAchievement.imageUrl ? (
-                  <img
-                    src={selectedAchievement.imageUrl}
-                    alt={selectedAchievement.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
+                  <img src={selectedAchievement.imageUrl} alt={selectedAchievement.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (
-                  <span
-                    className={`${selectedAchievement.isLetter ? "font-serif font-bold" : ""} text-6xl`}
-                    style={{ color: selectedAchievement.color }}
-                  >
+                  <span className={`${selectedAchievement.isLetter ? "font-serif font-bold" : ""} text-6xl`} style={{ color: selectedAchievement.color }}>
                     {selectedAchievement.icon}
                   </span>
                 )}
-                {/* Upload hover overlay */}
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ background: "rgba(0,0,0,0.55)" }}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(0,0,0,0.5)" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
-                  <span className="font-mono text-white mt-2" style={{ fontSize: "10px" }}>upload photo</span>
+                  <span className="font-mono text-white mt-1" style={{ fontSize: "9px" }}>upload photo</span>
                 </div>
               </div>
 
-              <h3 className="font-serif text-xl font-bold text-center" style={{ color: "#1a1a1a" }}>
-                {selectedAchievement.title}
-              </h3>
-              <p className="text-sm text-center mt-1 font-sans" style={{ color: "#555" }}>
-                {selectedAchievement.subtitle}
-              </p>
-              <p className="font-mono text-xs text-center mt-2" style={{ color: "#888" }}>
-                {selectedAchievement.year}
-              </p>
+              {/* Editable title */}
+              {editField === "title" ? (
+                <input
+                  autoFocus
+                  className="font-serif text-xl font-bold text-center w-full outline-none bg-transparent border-b mb-1 block"
+                  style={{ color: "#1a1a1a", borderColor: "rgba(0,0,0,0.2)", paddingBottom: 3 }}
+                  defaultValue={selectedAchievement.title}
+                  onBlur={e => { updateField("title", e.target.value); setEditField(null); }}
+                  onKeyDown={e => { if (e.key === "Enter") { updateField("title", (e.target as HTMLInputElement).value); setEditField(null); } }}
+                />
+              ) : (
+                <h3
+                  className="font-serif text-xl font-bold text-center cursor-text hover:opacity-70 transition-opacity"
+                  style={{ color: "#1a1a1a" }}
+                  onClick={() => setEditField("title")}
+                  title="Click to edit"
+                >
+                  {selectedAchievement.title}
+                </h3>
+              )}
 
-              <div className="flex items-center justify-center gap-4 mt-5">
+              {/* Editable subtitle */}
+              {editField === "subtitle" ? (
+                <input
+                  autoFocus
+                  className="text-sm text-center w-full outline-none bg-transparent border-b block mt-1"
+                  style={{ color: "#555", borderColor: "rgba(0,0,0,0.15)", paddingBottom: 3, fontFamily: "DM Sans, sans-serif" }}
+                  defaultValue={selectedAchievement.subtitle}
+                  onBlur={e => { updateField("subtitle", e.target.value); setEditField(null); }}
+                  onKeyDown={e => { if (e.key === "Enter") { updateField("subtitle", (e.target as HTMLInputElement).value); setEditField(null); } }}
+                />
+              ) : (
+                <p
+                  className="text-sm text-center mt-1 font-sans cursor-text hover:opacity-70 transition-opacity"
+                  style={{ color: "#555" }}
+                  onClick={() => setEditField("subtitle")}
+                  title="Click to edit"
+                >
+                  {selectedAchievement.subtitle}
+                </p>
+              )}
+
+              {/* Editable year */}
+              {editField === "year" ? (
+                <input
+                  autoFocus
+                  className="font-mono text-xs text-center w-full outline-none bg-transparent border-b block mt-2"
+                  style={{ color: "#888", borderColor: "rgba(0,0,0,0.12)", paddingBottom: 2 }}
+                  defaultValue={selectedAchievement.year}
+                  onBlur={e => { updateField("year", e.target.value); setEditField(null); }}
+                  onKeyDown={e => { if (e.key === "Enter") { updateField("year", (e.target as HTMLInputElement).value); setEditField(null); } }}
+                />
+              ) : (
+                <p
+                  className="font-mono text-xs text-center mt-2 cursor-text hover:opacity-70 transition-opacity"
+                  style={{ color: "#888" }}
+                  onClick={() => setEditField("year")}
+                  title="Click to edit"
+                >
+                  {selectedAchievement.year}
+                </p>
+              )}
+
+              <div className="text-center mt-4">
+                <span className="font-mono text-xs" style={{ color: "rgba(0,0,0,0.25)" }}>click any field to edit</span>
+              </div>
+
+              <div className="flex items-center justify-center gap-4 mt-3">
                 <button
                   className="text-xs font-mono underline transition-opacity hover:opacity-50"
                   style={{ color: "#888" }}
@@ -188,7 +229,7 @@ export default function Achievements() {
                 <button
                   className="text-xs font-sans underline transition-opacity hover:opacity-50"
                   style={{ color: "#888" }}
-                  onClick={() => setSelected(null)}
+                  onClick={closeModal}
                   data-testid="achievement-close"
                 >
                   close
