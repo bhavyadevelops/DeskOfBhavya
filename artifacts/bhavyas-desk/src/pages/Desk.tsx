@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import StickyNotes from "@/components/desk/StickyNotes";
 import Laptop from "@/components/desk/Laptop";
@@ -6,13 +5,11 @@ import Books from "@/components/desk/Books";
 import Phone from "@/components/desk/Phone";
 import Papers from "@/components/desk/Papers";
 import Clock from "@/components/desk/Clock";
-import Pen from "@/components/desk/Pen";
 import Achievements from "@/components/desk/Achievements";
 import WaterBottle from "@/components/desk/WaterBottle";
+import Guestbook from "@/components/desk/Guestbook";
 
 export default function Desk() {
-  const [scribbleMode, setScribbleMode] = useState(false);
-
   return (
     <div
       className="w-full h-[100dvh] overflow-hidden flex items-center justify-center"
@@ -99,8 +96,8 @@ export default function Desk() {
           <Books />
           <Phone />
           <Papers />
-          <Pen scribbleMode={scribbleMode} setScribbleMode={setScribbleMode} />
           <WaterBottle />
+          <Guestbook />
         </div>
       </motion.div>
     </div>

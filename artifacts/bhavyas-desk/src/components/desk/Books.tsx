@@ -23,6 +23,17 @@ interface Book {
   chapters: Chapter[];
 }
 
+const SPINE_PALETTE = [
+  { spine: "#1e3a6e", title: "#a8c5e8" },
+  { spine: "#1e4a2e", title: "#a8e6b0" },
+  { spine: "#6e1e1e", title: "#f4a0a0" },
+  { spine: "#4a2e6e", title: "#c8a8e8" },
+  { spine: "#6e4a1e", title: "#e8c8a8" },
+  { spine: "#1e4a4a", title: "#a8e6e6" },
+  { spine: "#3a3a1e", title: "#e0dda8" },
+  { spine: "#6e1e4a", title: "#f4a0cc" },
+];
+
 function makeTextBlock(value: string, id: number): ContentBlock {
   return { id, type: "text", value };
 }
@@ -111,8 +122,36 @@ export default function Books() {
   const chapterRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  // Book management
+  const [addingBook, setAddingBook] = useState(false);
+  const [newBookTitle, setNewBookTitle] = useState("");
+  const [newBookPalette, setNewBookPalette] = useState(0);
+  const [confirmDeleteBookId, setConfirmDeleteBookId] = useState<number | null>(null);
+
   const book = books.find(b => b.id === openBookId) ?? null;
   const bookmarkedCount = book ? book.chapters.filter(c => c.bookmarked).length : 0;
+
+  const createBook = () => {
+    if (!newBookTitle.trim()) return;
+    const palette = SPINE_PALETTE[newBookPalette % SPINE_PALETTE.length];
+    const newBook: Book = {
+      id: nextId++,
+      spineColor: palette.spine,
+      titleColor: palette.title,
+      title: newBookTitle.trim(),
+      chapters: [],
+    };
+    setBooks(prev => [...prev, newBook]);
+    setNewBookTitle("");
+    setNewBookPalette(0);
+    setAddingBook(false);
+  };
+
+  const deleteBook = (id: number) => {
+    setBooks(prev => prev.filter(b => b.id !== id));
+    setConfirmDeleteBookId(null);
+    if (openBookId === id) closeBook();
+  };
 
   const openBook = (id: number) => {
     setOpenBookId(id);
@@ -218,10 +257,10 @@ export default function Books() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
       >
-        {books.map((b, i) => (
+          {books.map((b, i) => (
           <motion.div
             key={b.id}
-            className="cursor-pointer relative rounded-sm select-none"
+            className="cursor-pointer relative rounded-sm select-none group/spine"
             style={{
               width: 26,
               height: 110 + i * 15,
@@ -231,7 +270,10 @@ export default function Books() {
             }}
             whileHover={{ y: -12, scale: 1.05, boxShadow: "4px 12px 30px rgba(0,0,0,0.6)" }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            onClick={() => openBook(b.id)}
+            onClick={() => {
+              if (confirmDeleteBookId === b.id) return;
+              openBook(b.id);
+            }}
             data-testid={`book-${b.id}`}
           >
             <div
@@ -249,8 +291,104 @@ export default function Books() {
             >
               {b.title}
             </div>
+            {/* Delete button — appears on hover */}
+            <button
+              className="absolute top-1 left-1/2 -translate-x-1/2 rounded-full font-mono flex items-center justify-center opacity-0 group-hover/spine:opacity-100 transition-opacity"
+              style={{ width: 14, height: 14, background: "rgba(0,0,0,0.55)", color: "rgba(255,200,180,0.9)", fontSize: "10px", lineHeight: 1, zIndex: 10 }}
+              onClick={e => {
+                e.stopPropagation();
+                if (confirmDeleteBookId === b.id) {
+                  deleteBook(b.id);
+                } else {
+                  setConfirmDeleteBookId(b.id);
+                  setTimeout(() => setConfirmDeleteBookId(null), 2500);
+                }
+              }}
+              title={confirmDeleteBookId === b.id ? "Click again to confirm delete" : "Remove book"}
+            >
+              {confirmDeleteBookId === b.id ? "!" : "×"}
+            </button>
           </motion.div>
         ))}
+
+        {/* Add book button */}
+        <div className="relative" style={{ alignSelf: "flex-end" }}>
+          <motion.button
+            className="relative rounded-sm select-none flex items-center justify-center"
+            style={{
+              width: 22,
+              height: 90,
+              background: addingBook ? "rgba(245,200,100,0.18)" : "rgba(255,255,255,0.06)",
+              border: `1px dashed ${addingBook ? "rgba(245,200,100,0.5)" : "rgba(255,255,255,0.15)"}`,
+              color: addingBook ? "rgba(245,200,100,0.8)" : "rgba(255,255,255,0.25)",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+            whileHover={{ background: "rgba(245,200,100,0.12)", borderColor: "rgba(245,200,100,0.4)" }}
+            onClick={() => setAddingBook(v => !v)}
+            title="Add a new book"
+          >
+            {addingBook ? "×" : "+"}
+          </motion.button>
+
+          {/* Add book popover */}
+          <AnimatePresence>
+            {addingBook && (
+              <motion.div
+                className="absolute"
+                style={{ bottom: 0, right: 30, zIndex: 50, width: 200 }}
+                initial={{ opacity: 0, x: 8, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 8, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                onClick={e => e.stopPropagation()}
+              >
+                <div
+                  className="rounded-lg p-3"
+                  style={{ background: "#1a1510", border: "1px solid rgba(245,200,100,0.2)", boxShadow: "0 16px 40px rgba(0,0,0,0.6)" }}
+                >
+                  <div className="font-mono text-xs mb-2" style={{ color: "rgba(245,200,100,0.5)" }}>new book</div>
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    value={newBookTitle}
+                    onChange={e => setNewBookTitle(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter") createBook(); }}
+                    autoFocus
+                    className="w-full font-serif text-sm outline-none bg-transparent border-b mb-3"
+                    style={{ color: "#f5e8c8", borderColor: "rgba(245,200,100,0.25)", paddingBottom: 4 }}
+                    maxLength={24}
+                  />
+                  {/* Color swatches */}
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {SPINE_PALETTE.map((p, idx) => (
+                      <button
+                        key={idx}
+                        className="rounded-sm transition-all"
+                        style={{
+                          width: 18,
+                          height: 18,
+                          background: p.spine,
+                          outline: newBookPalette === idx ? `2px solid rgba(245,200,100,0.8)` : "2px solid transparent",
+                          outlineOffset: 1,
+                        }}
+                        onClick={() => setNewBookPalette(idx)}
+                        title={`Color ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    className="font-mono text-xs w-full py-1.5 rounded transition-opacity hover:opacity-80"
+                    style={{ background: SPINE_PALETTE[newBookPalette].spine, color: SPINE_PALETTE[newBookPalette].title }}
+                    onClick={createBook}
+                  >
+                    add book
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       {/* Hidden file input */}
