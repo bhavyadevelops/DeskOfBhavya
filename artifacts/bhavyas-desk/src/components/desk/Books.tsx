@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ContentBlock {
@@ -26,7 +26,7 @@ function tb(value: string, id: number): ContentBlock {
   return { id, type: "text", value };
 }
 
-const BOOKS: Book[] = [
+const DEFAULT_BOOKS: Book[] = [
   {
     id: 1,
     spineColor: "#1e3a6e",
@@ -89,23 +89,130 @@ const BOOKS: Book[] = [
   },
 ];
 
+let nextId = 5000;
+
+async function fetchBooks(): Promise<Book[] | null> {
+  try {
+    const res = await fetch("/api/books");
+    if (!res.ok) return null;
+    return await res.json() as Book[] | null;
+  } catch {
+    return null;
+  }
+}
+
+async function saveBooks(books: Book[]): Promise<void> {
+  try {
+    await fetch("/api/books", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(books),
+    });
+  } catch { /* silent */ }
+}
+
+function readImageAsBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target?.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function Books() {
+  const [books, setBooks] = useState<Book[]>(DEFAULT_BOOKS);
   const [openBookId, setOpenBookId] = useState<number | null>(null);
   const [view, setView] = useState<"read" | "index">("read");
+  const [addingChapter, setAddingChapter] = useState(false);
+  const [newHeading, setNewHeading] = useState("");
+  const [newBody, setNewBody] = useState("");
+  const [pendingImageChapterId, setPendingImageChapterId] = useState<number | null>(null);
   const chapterRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const syncTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const book = BOOKS.find(b => b.id === openBookId) ?? null;
+  useEffect(() => {
+    fetchBooks().then(data => {
+      if (data && Array.isArray(data) && data.length > 0) setBooks(data);
+    });
+  }, []);
+
+  const scheduleSync = (updated: Book[]) => {
+    if (syncTimer.current) clearTimeout(syncTimer.current);
+    syncTimer.current = setTimeout(() => saveBooks(updated), 600);
+  };
+
+  const mutateBooks = (fn: (prev: Book[]) => Book[]) => {
+    setBooks(prev => {
+      const next = fn(prev);
+      scheduleSync(next);
+      return next;
+    });
+  };
+
+  const book = books.find(b => b.id === openBookId) ?? null;
 
   const closeBook = () => {
     setOpenBookId(null);
     setView("read");
+    setAddingChapter(false);
   };
 
   const scrollToChapter = (chapterId: number) => {
     setView("read");
+    setAddingChapter(false);
     setTimeout(() => {
       chapterRefs.current.get(chapterId)?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
+  };
+
+  const addChapter = () => {
+    if (!newHeading.trim() || openBookId === null) return;
+    const date = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    const chapter: Chapter = {
+      id: nextId++,
+      heading: newHeading.trim(),
+      date,
+      blocks: newBody.trim() ? [tb(newBody.trim(), nextId++)] : [],
+    };
+    mutateBooks(prev => prev.map(b => b.id === openBookId ? { ...b, chapters: [...b.chapters, chapter] } : b));
+    setNewHeading("");
+    setNewBody("");
+    setAddingChapter(false);
+  };
+
+  const deleteChapter = (chapterId: number) => {
+    if (openBookId === null) return;
+    mutateBooks(prev => prev.map(b => b.id === openBookId ? { ...b, chapters: b.chapters.filter(c => c.id !== chapterId) } : b));
+  };
+
+  const deleteBlock = (chapterId: number, blockId: number) => {
+    if (openBookId === null) return;
+    mutateBooks(prev => prev.map(b => b.id === openBookId ? {
+      ...b,
+      chapters: b.chapters.map(c => c.id === chapterId ? { ...c, blocks: c.blocks.filter(bl => bl.id !== blockId) } : c),
+    } : b));
+  };
+
+  const triggerImageUpload = (chapterId: number) => {
+    setPendingImageChapterId(chapterId);
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || pendingImageChapterId === null || openBookId === null) return;
+    e.target.value = "";
+    try {
+      const dataUrl = await readImageAsBase64(file);
+      const imgBlock: ContentBlock = { id: nextId++, type: "image", value: dataUrl };
+      mutateBooks(prev => prev.map(b => b.id === openBookId ? {
+        ...b,
+        chapters: b.chapters.map(c => c.id === pendingImageChapterId ? { ...c, blocks: [...c.blocks, imgBlock] } : c),
+      } : b));
+    } catch { /* silent */ }
+    setPendingImageChapterId(null);
   };
 
   return (
@@ -118,7 +225,7 @@ export default function Books() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
       >
-        {BOOKS.map((b, i) => (
+        {books.map((b, i) => (
           <motion.div
             key={b.id}
             className="cursor-pointer relative rounded-sm select-none"
@@ -131,27 +238,21 @@ export default function Books() {
             }}
             whileHover={{ y: -12, scale: 1.05, boxShadow: "4px 12px 30px rgba(0,0,0,0.6)" }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            onClick={() => { setOpenBookId(b.id); setView("read"); }}
+            onClick={() => { setOpenBookId(b.id); setView("read"); setAddingChapter(false); }}
             data-testid={`book-${b.id}`}
           >
             <div
               className="absolute font-serif font-bold"
-              style={{
-                color: b.titleColor,
-                fontSize: "8px",
-                letterSpacing: "0.1em",
-                writingMode: "vertical-rl",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%) rotate(180deg)",
-                whiteSpace: "nowrap",
-              }}
+              style={{ color: b.titleColor, fontSize: "8px", letterSpacing: "0.1em", writingMode: "vertical-rl", top: "50%", left: "50%", transform: "translate(-50%, -50%) rotate(180deg)", whiteSpace: "nowrap" }}
             >
               {b.title}
             </div>
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Hidden file input */}
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
 
       {/* Book modal */}
       <AnimatePresence>
@@ -167,7 +268,7 @@ export default function Books() {
           >
             <motion.div
               className="relative flex flex-col"
-              style={{ width: 580, maxHeight: "80vh", background: "#f8f3e8", borderRadius: 6, boxShadow: "0 32px 80px rgba(0,0,0,0.6)", overflow: "hidden" }}
+              style={{ width: 600, maxHeight: "82vh", background: "#f8f3e8", borderRadius: 6, boxShadow: "0 32px 80px rgba(0,0,0,0.6)", overflow: "hidden" }}
               initial={{ scale: 0.85, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.85, y: 20 }}
@@ -188,11 +289,22 @@ export default function Books() {
                   <button
                     className="font-mono text-xs px-2.5 py-1 rounded transition-all"
                     style={{
+                      background: addingChapter ? "#f0e8d0" : "transparent",
+                      color: "#8b7355",
+                      border: "1px solid rgba(180,160,100,0.35)",
+                    }}
+                    onClick={() => { setAddingChapter(v => !v); setView("read"); }}
+                  >
+                    {addingChapter ? "cancel" : "+ chapter"}
+                  </button>
+                  <button
+                    className="font-mono text-xs px-2.5 py-1 rounded transition-all"
+                    style={{
                       background: view === "index" ? book.spineColor : "transparent",
                       color: view === "index" ? book.titleColor : "#8b7355",
                       border: `1px solid ${view === "index" ? book.spineColor : "rgba(180,160,100,0.3)"}`,
                     }}
-                    onClick={() => setView(v => v === "index" ? "read" : "index")}
+                    onClick={() => { setView(v => v === "index" ? "read" : "index"); setAddingChapter(false); }}
                   >
                     {view === "index" ? "reading" : "index"}
                   </button>
@@ -210,51 +322,156 @@ export default function Books() {
               {/* Content */}
               <div className="overflow-y-auto flex-1" style={{ marginLeft: 18 }}>
 
+                {/* ADD CHAPTER FORM */}
+                <AnimatePresence>
+                  {addingChapter && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      style={{ padding: "16px 20px", borderBottom: "1px solid rgba(180,160,100,0.2)", background: "#f0e8d0", overflow: "hidden" }}
+                    >
+                      <div className="font-mono text-xs mb-3" style={{ color: "#b8966e", letterSpacing: "0.1em" }}>NEW CHAPTER</div>
+                      <input
+                        autoFocus
+                        type="text"
+                        placeholder="Chapter heading..."
+                        value={newHeading}
+                        onChange={e => setNewHeading(e.target.value)}
+                        className="w-full font-serif text-lg font-bold outline-none bg-transparent border-b mb-3"
+                        style={{ color: "#2a1a0a", borderColor: "rgba(180,160,100,0.4)", paddingBottom: 6 }}
+                      />
+                      <textarea
+                        placeholder="Write something..."
+                        value={newBody}
+                        onChange={e => setNewBody(e.target.value)}
+                        rows={5}
+                        className="w-full font-sans text-sm outline-none bg-transparent resize-none"
+                        style={{ color: "#3a2a1a", lineHeight: 1.7 }}
+                      />
+                      <div className="flex justify-end mt-3 gap-2">
+                        <button className="font-mono text-xs px-3 py-1.5 rounded hover:opacity-70" style={{ color: "#8b7355", border: "1px solid rgba(180,160,100,0.35)" }} onClick={() => { setAddingChapter(false); setNewHeading(""); setNewBody(""); }}>
+                          cancel
+                        </button>
+                        <button
+                          className="font-mono text-xs px-4 py-1.5 rounded hover:opacity-80"
+                          style={{ background: book.spineColor, color: book.titleColor }}
+                          onClick={addChapter}
+                        >
+                          add chapter
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 {/* INDEX VIEW */}
-                {view === "index" && (
+                {view === "index" && !addingChapter && (
                   <div style={{ padding: "16px 20px 24px" }}>
                     <div className="font-mono text-xs mb-4" style={{ color: "#b8966e", letterSpacing: "0.1em" }}>TABLE OF CONTENTS</div>
+                    {book.chapters.length === 0 && (
+                      <div className="font-serif text-center py-8" style={{ color: "rgba(0,0,0,0.2)", fontStyle: "italic" }}>
+                        No chapters yet. Add one above.
+                      </div>
+                    )}
                     {book.chapters.map((c, idx) => (
-                      <motion.button
+                      <motion.div
                         key={c.id}
-                        className="w-full text-left flex items-start gap-3 py-3 group"
+                        className="flex items-start gap-3 py-3 group"
                         style={{ borderBottom: idx < book.chapters.length - 1 ? "1px solid rgba(180,160,100,0.15)" : "none" }}
-                        onClick={() => scrollToChapter(c.id)}
-                        whileHover={{ x: 4 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
                       >
-                        <span className="font-mono shrink-0" style={{ color: "#c8a878", fontSize: "11px", marginTop: 3 }}>
-                          {String(idx + 1).padStart(2, "0")}
-                        </span>
-                        <div>
-                          <div className="font-serif text-base font-bold group-hover:underline" style={{ color: "#2a1a0a" }}>{c.heading}</div>
-                          <div className="font-mono text-xs mt-0.5" style={{ color: "#b8966e" }}>{c.date}</div>
-                        </div>
-                      </motion.button>
+                        <button
+                          className="flex-1 text-left flex items-start gap-3"
+                          onClick={() => scrollToChapter(c.id)}
+                        >
+                          <span className="font-mono shrink-0" style={{ color: "#c8a878", fontSize: "11px", marginTop: 3 }}>
+                            {String(idx + 1).padStart(2, "0")}
+                          </span>
+                          <div>
+                            <div className="font-serif text-base font-bold group-hover:underline" style={{ color: "#2a1a0a" }}>{c.heading}</div>
+                            <div className="font-mono text-xs mt-0.5" style={{ color: "#b8966e" }}>{c.date}</div>
+                          </div>
+                        </button>
+                        <button
+                          title="Delete chapter"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity font-mono text-lg leading-none hover:text-red-400 mt-0.5"
+                          style={{ color: "#c8a878" }}
+                          onClick={() => deleteChapter(c.id)}
+                        >
+                          ×
+                        </button>
+                      </motion.div>
                     ))}
                   </div>
                 )}
 
                 {/* READING VIEW */}
-                {view === "read" && (
+                {view === "read" && !addingChapter && (
                   <div style={{ padding: "0 20px 28px" }}>
+                    {book.chapters.length === 0 && (
+                      <div className="font-serif text-center py-12" style={{ color: "rgba(0,0,0,0.2)", fontStyle: "italic" }}>
+                        This book is empty. Add a chapter to begin.
+                      </div>
+                    )}
                     {book.chapters.map((chapter, idx) => (
                       <div
                         key={chapter.id}
                         ref={el => { if (el) chapterRefs.current.set(chapter.id, el); }}
+                        className="group"
                         style={{ paddingTop: 24, paddingBottom: 24, borderBottom: idx < book.chapters.length - 1 ? "1px solid rgba(180,160,100,0.18)" : "none" }}
                       >
-                        <div className="font-mono text-xs mb-1" style={{ color: "#b8966e" }}>{chapter.date}</div>
-                        <h3 className="font-serif text-lg font-bold mb-3" style={{ color: "#2a1a0a", lineHeight: 1.25 }}>{chapter.heading}</h3>
-                        {chapter.blocks.map(block => (
-                          <div key={block.id} className="mb-3">
-                            {block.type === "text" ? (
-                              <p className="font-sans text-sm leading-relaxed" style={{ color: "#3a2a1a", whiteSpace: "pre-line" }}>{block.value}</p>
-                            ) : (
-                              <img src={block.value} alt="chapter image" className="rounded-sm w-full" style={{ maxHeight: 260, objectFit: "cover", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }} />
-                            )}
+                        {/* Chapter header */}
+                        <div className="flex items-start justify-between mb-1">
+                          <div>
+                            <div className="font-mono text-xs" style={{ color: "#b8966e" }}>{chapter.date}</div>
+                            <h3 className="font-serif text-lg font-bold mt-0.5" style={{ color: "#2a1a0a", lineHeight: 1.25 }}>{chapter.heading}</h3>
                           </div>
-                        ))}
+                          <div className="flex gap-2 items-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1">
+                            <button
+                              title="Add image"
+                              className="font-mono text-xs px-2 py-0.5 rounded hover:opacity-70"
+                              style={{ background: "rgba(180,160,100,0.2)", color: "#8b7355", border: "1px solid rgba(180,160,100,0.3)" }}
+                              onClick={() => triggerImageUpload(chapter.id)}
+                            >
+                              + img
+                            </button>
+                            <button
+                              title="Delete chapter"
+                              className="font-mono text-lg leading-none hover:text-red-400"
+                              style={{ color: "#c8a878" }}
+                              onClick={() => deleteChapter(chapter.id)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Content blocks */}
+                        <div className="mt-3">
+                          {chapter.blocks.map(block => (
+                            <div key={block.id} className="mb-3 relative group/block">
+                              {block.type === "text" ? (
+                                <p className="font-sans text-sm leading-relaxed" style={{ color: "#3a2a1a", whiteSpace: "pre-line" }}>{block.value}</p>
+                              ) : (
+                                <div className="relative">
+                                  <img
+                                    src={block.value}
+                                    alt="chapter image"
+                                    className="rounded-sm w-full"
+                                    style={{ maxHeight: 280, objectFit: "contain", boxShadow: "0 2px 12px rgba(0,0,0,0.12)", background: "rgba(0,0,0,0.04)" }}
+                                  />
+                                  <button
+                                    className="absolute top-2 right-2 rounded-full flex items-center justify-center text-white opacity-0 group-hover/block:opacity-100 transition-opacity hover:scale-110"
+                                    style={{ width: 22, height: 22, background: "rgba(220,40,40,0.85)", fontSize: "14px", lineHeight: 1 }}
+                                    onClick={() => deleteBlock(chapter.id, block.id)}
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>
