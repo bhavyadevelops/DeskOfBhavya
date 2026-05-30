@@ -19,7 +19,7 @@
     {
       "id": 3,
       "label": "Learning Right Now",
-      "text": "AI & Machine Learning",
+      "text": "Program Management",
       "color": "#F9E97A",
       "rotation": -1,
       "done": false
@@ -27,7 +27,7 @@
     {
       "id": 4,
       "label": "Next Goal",
-      "text": "AIATS — ATS Resume AI",
+      "text": "ResumeIQ — AI-powered ATS improvement recommendation engine",
       "color": "#FFD6A5",
       "rotation": 3,
       "done": false
