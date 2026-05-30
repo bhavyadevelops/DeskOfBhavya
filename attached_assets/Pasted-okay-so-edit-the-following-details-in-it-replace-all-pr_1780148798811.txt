@@ -1,0 +1,58 @@
+okay so edit the following details in it:
+
+replace all projects with the following:
+
+Project QUANTEX
+Project QUANTEX is an AI-powered platform that connects users with verified technicians for fast, reliable technical support. Users can book on-demand assistance, describe issues through text or images, receive smart technician recommendations, track service requests, and access support from a single interface. Built to simplify technical problem-solving, QUANTEX reduces search time and improves access to trusted expertise.
+
+tags: Artificial Intelligence, Web Development, Technical Support, Service Marketplace, Startup, Entrepreneurship, Customer Experience, Problem Solving, Digital Innovation, SaaS
+
+GitHub: https://github.com/bhavyadevelops/Project-QUANTEX
+
+Live demo: tech-support-connect--bhavyachokshi36.replit.app
+
+Spotify Web v1.0
+A modern reimagination of Spotify with a sleek, immersive UI focused on simplicity, speed, and user experience. Features a visually rich music dashboard, smooth navigation, responsive design, and a premium listening experience that blends aesthetics with functionality. Built to showcase modern frontend development, interactive design, and a fresh take on music streaming platforms.
+
+tags: Frontend Development
+ReactJS
+TypeScript
+UI/UX Design
+Responsive Web Design
+Music Streaming
+User Experience
+Digital Innovation
+Product Design
+Creative Technology
+
+gitHub: https://github.com/bhavyadevelops/Spotify-Reimagined
+
+Live Demo: spotify-reimagined.vercel.app
+
+AIATS:
+
+Developing an AI-powered ATS Resume Analyzer that evaluates resume-job fit, scores ATS compatibility, identifies missing keywords, and generates personalized optimization suggestions. Designed to help candidates improve recruiter visibility, increase interview opportunities, and tailor resumes for specific roles through intelligent AI-driven feedback.
+
+tags:
+Artificial Intelligence, NLP, ATS Optimization, Resume Parsing, Generative AI, Career Development, Recruitment Technology, Talent Acquisition, Resume Enhancement, Interview Preparation
+
+GitHub: https://github.com/bhavyadevelops/AIATS
+
+HackMIT 2023:
+JunoHub AI Bootcamp
+Top 10 Winner — Project QUANTEX
+2026
+image: DSC00674
+
+DO NOT TRIM THE PHOTO
+
+Google Summer of Code:
+My Career Mentor
+Certification of Achievement
+2026
+image: mcm cert
+DO NOT TRIM THE IMAGE
+
+Except the sticky notes feature, remove every editing part.
+
+also, position the laptop module in the center, and replace it withj a laptop upper screen.

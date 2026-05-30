@@ -22,9 +22,7 @@ function loadEntries(): GuestEntry[] {
 function saveEntries(entries: GuestEntry[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  } catch {
-    // ignore
-  }
+  } catch { /* ignore */ }
 }
 
 export default function Guestbook() {
@@ -55,12 +53,6 @@ export default function Guestbook() {
     setTimeout(() => setSubmitted(false), 2200);
   };
 
-  const deleteEntry = (id: number) => {
-    const updated = entries.filter(e => e.id !== id);
-    setEntries(updated);
-    saveEntries(updated);
-  };
-
   return (
     <>
       {/* Desk object — notepad */}
@@ -77,54 +69,25 @@ export default function Guestbook() {
         {/* Spiral binding */}
         <div className="flex gap-[5px] justify-center mb-0.5 px-1">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="rounded-full"
-              style={{ width: 5, height: 7, background: "rgba(80,60,30,0.7)", border: "1px solid rgba(255,255,255,0.1)" }}
-            />
+            <div key={i} className="rounded-full" style={{ width: 5, height: 7, background: "rgba(80,60,30,0.7)", border: "1px solid rgba(255,255,255,0.1)" }} />
           ))}
         </div>
         {/* Notepad body */}
-        <div
-          className="rounded-sm"
-          style={{
-            width: 78,
-            height: 90,
-            background: "#fef9c3",
-            boxShadow: "2px 4px 16px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(0,0,0,0.06)",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          {/* Ruled lines */}
+        <div className="rounded-sm" style={{ width: 78, height: 90, background: "#fef9c3", boxShadow: "2px 4px 16px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(0,0,0,0.06)", position: "relative", overflow: "hidden" }}>
           {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute left-0 right-0"
-              style={{ top: 14 + i * 10, height: 1, background: "rgba(180,160,80,0.25)" }}
-            />
+            <div key={i} className="absolute left-0 right-0" style={{ top: 14 + i * 10, height: 1, background: "rgba(180,160,80,0.25)" }} />
           ))}
-          {/* Margin line */}
           <div className="absolute top-0 bottom-0" style={{ left: 14, width: 1, background: "rgba(240,100,100,0.2)" }} />
-          {/* Label */}
-          <div
-            className="absolute font-serif text-center"
-            style={{ top: 6, left: 0, right: 0, color: "#92400e", fontSize: "7px", fontStyle: "italic", letterSpacing: "0.05em" }}
-          >
+          <div className="absolute font-serif text-center" style={{ top: 6, left: 0, right: 0, color: "#92400e", fontSize: "7px", fontStyle: "italic" }}>
             guestbook
           </div>
           {entries.length > 0 && (
-            <div
-              className="absolute font-mono"
-              style={{ bottom: 5, right: 5, color: "rgba(146,64,14,0.5)", fontSize: "7px" }}
-            >
+            <div className="absolute font-mono" style={{ bottom: 5, right: 5, color: "rgba(146,64,14,0.5)", fontSize: "7px" }}>
               {entries.length}
             </div>
           )}
         </div>
-        <div className="font-mono text-center mt-1" style={{ color: "rgba(245,200,100,0.25)", fontSize: "8px" }}>
-          sign it
-        </div>
+        <div className="font-mono text-center mt-1" style={{ color: "rgba(245,200,100,0.25)", fontSize: "8px" }}>sign it</div>
       </motion.div>
 
       {/* Modal */}
@@ -141,13 +104,7 @@ export default function Guestbook() {
           >
             <motion.div
               className="relative flex flex-col overflow-hidden"
-              style={{
-                width: 500,
-                maxHeight: "82vh",
-                background: "#fef9c3",
-                borderRadius: 6,
-                boxShadow: "0 32px 80px rgba(0,0,0,0.55)",
-              }}
+              style={{ width: 500, maxHeight: "82vh", background: "#fef9c3", borderRadius: 6, boxShadow: "0 32px 80px rgba(0,0,0,0.55)" }}
               initial={{ scale: 0.88, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.88, y: 20 }}
@@ -156,39 +113,23 @@ export default function Guestbook() {
               data-testid="guestbook-modal"
             >
               {/* Spiral binding strip */}
-              <div
-                className="flex gap-[6px] items-center px-4 shrink-0"
-                style={{ background: "#fbbf24", padding: "8px 16px", borderBottom: "2px solid rgba(0,0,0,0.08)" }}
-              >
+              <div className="flex gap-[6px] items-center px-4 shrink-0" style={{ background: "#fbbf24", padding: "8px 16px", borderBottom: "2px solid rgba(0,0,0,0.08)" }}>
                 {Array.from({ length: 16 }).map((_, i) => (
                   <div key={i} className="rounded-full" style={{ width: 6, height: 10, background: "rgba(80,50,10,0.6)", border: "1px solid rgba(255,255,255,0.2)" }} />
                 ))}
               </div>
 
               {/* Header */}
-              <div
-                className="flex items-center justify-between shrink-0"
-                style={{ padding: "14px 20px 10px", borderBottom: "1px solid rgba(180,140,30,0.25)" }}
-              >
+              <div className="flex items-center justify-between shrink-0" style={{ padding: "14px 20px 10px", borderBottom: "1px solid rgba(180,140,30,0.25)" }}>
                 <div>
-                  <h2 className="font-serif text-xl font-bold" style={{ color: "#78350f" }}>
-                    Guestbook
-                  </h2>
-                  <p className="font-sans text-xs mt-0.5" style={{ color: "#92400e", opacity: 0.7 }}>
-                    Leave a note for Bhavya
-                  </p>
+                  <h2 className="font-serif text-xl font-bold" style={{ color: "#78350f" }}>Guestbook</h2>
+                  <p className="font-sans text-xs mt-0.5" style={{ color: "#92400e", opacity: 0.7 }}>Leave a note for Bhavya</p>
                 </div>
-                <button
-                  className="font-mono text-sm hover:opacity-50 transition-opacity"
-                  style={{ color: "#92400e" }}
-                  onClick={() => setOpen(false)}
-                  data-testid="guestbook-close"
-                >
+                <button className="font-mono text-sm hover:opacity-50 transition-opacity" style={{ color: "#92400e" }} onClick={() => setOpen(false)} data-testid="guestbook-close">
                   close
                 </button>
               </div>
 
-              {/* Scrollable content */}
               <div className="overflow-y-auto flex-1">
                 {/* Sign form */}
                 <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(180,140,30,0.2)" }}>
@@ -212,29 +153,14 @@ export default function Guestbook() {
                     style={{ color: "#451a03", lineHeight: 1.8, borderBottom: "1px solid rgba(180,140,30,0.25)", paddingBottom: 6 }}
                   />
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-mono" style={{ color: "rgba(180,120,30,0.5)", fontSize: "9px" }}>
-                      {message.length}/200
-                    </span>
+                    <span className="font-mono" style={{ color: "rgba(180,120,30,0.5)", fontSize: "9px" }}>{message.length}/200</span>
                     <AnimatePresence mode="wait">
                       {submitted ? (
-                        <motion.div
-                          key="thanks"
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          className="font-serif text-sm"
-                          style={{ color: "#15803d", fontStyle: "italic" }}
-                        >
+                        <motion.div key="thanks" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="font-serif text-sm" style={{ color: "#15803d", fontStyle: "italic" }}>
                           Thanks for signing! ✦
                         </motion.div>
                       ) : (
-                        <motion.button
-                          key="sign"
-                          className="font-serif text-sm px-5 py-1.5 rounded-sm transition-opacity hover:opacity-80"
-                          style={{ background: "#78350f", color: "#fef9c3", fontStyle: "italic" }}
-                          onClick={addEntry}
-                          whileTap={{ scale: 0.97 }}
-                        >
+                        <motion.button key="sign" className="font-serif text-sm px-5 py-1.5 rounded-sm hover:opacity-80 transition-opacity" style={{ background: "#78350f", color: "#fef9c3", fontStyle: "italic" }} onClick={addEntry} whileTap={{ scale: 0.97 }}>
                           Sign the book
                         </motion.button>
                       )}
@@ -242,13 +168,10 @@ export default function Guestbook() {
                   </div>
                 </div>
 
-                {/* Entries */}
+                {/* Entries — read only, no delete */}
                 <div style={{ padding: "12px 20px 24px" }}>
                   {entries.length === 0 ? (
-                    <div
-                      className="font-serif text-center py-10"
-                      style={{ color: "rgba(146,64,14,0.35)", fontSize: "14px", fontStyle: "italic" }}
-                    >
+                    <div className="font-serif text-center py-10" style={{ color: "rgba(146,64,14,0.35)", fontSize: "14px", fontStyle: "italic" }}>
                       No entries yet — be the first to sign!
                     </div>
                   ) : (
@@ -257,39 +180,16 @@ export default function Guestbook() {
                         key={entry.id}
                         initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        style={{
-                          paddingTop: 16,
-                          paddingBottom: 16,
-                          borderBottom: idx < entries.length - 1 ? "1px solid rgba(180,140,30,0.18)" : "none",
-                          position: "relative",
-                        }}
-                        className="group"
+                        style={{ paddingTop: 16, paddingBottom: 16, borderBottom: idx < entries.length - 1 ? "1px solid rgba(180,140,30,0.18)" : "none", position: "relative" }}
                       >
-                        {/* Ruled lines decoration */}
                         {Array.from({ length: 3 }).map((_, i) => (
                           <div key={i} className="absolute left-0 right-0" style={{ top: 38 + i * 18, height: 1, background: "rgba(180,140,30,0.12)", pointerEvents: "none" }} />
                         ))}
                         <div className="flex items-baseline justify-between mb-1">
-                          <span className="font-serif font-bold text-base" style={{ color: "#451a03" }}>
-                            {entry.name}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono" style={{ color: "rgba(146,64,14,0.45)", fontSize: "9px" }}>
-                              {entry.date}
-                            </span>
-                            <button
-                              onClick={() => deleteEntry(entry.id)}
-                              className="font-mono opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity"
-                              style={{ color: "#92400e", fontSize: "11px" }}
-                              title="Delete entry"
-                            >
-                              ×
-                            </button>
-                          </div>
+                          <span className="font-serif font-bold text-base" style={{ color: "#451a03" }}>{entry.name}</span>
+                          <span className="font-mono" style={{ color: "rgba(146,64,14,0.45)", fontSize: "9px" }}>{entry.date}</span>
                         </div>
-                        <p className="font-sans text-sm leading-relaxed" style={{ color: "#78350f" }}>
-                          {entry.message}
-                        </p>
+                        <p className="font-sans text-sm leading-relaxed" style={{ color: "#78350f" }}>{entry.message}</p>
                       </motion.div>
                     ))
                   )}

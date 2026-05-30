@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ContentBlock {
@@ -12,7 +12,6 @@ interface Chapter {
   heading: string;
   date: string;
   blocks: ContentBlock[];
-  bookmarked: boolean;
 }
 
 interface Book {
@@ -23,22 +22,11 @@ interface Book {
   chapters: Chapter[];
 }
 
-const SPINE_PALETTE = [
-  { spine: "#1e3a6e", title: "#a8c5e8" },
-  { spine: "#1e4a2e", title: "#a8e6b0" },
-  { spine: "#6e1e1e", title: "#f4a0a0" },
-  { spine: "#4a2e6e", title: "#c8a8e8" },
-  { spine: "#6e4a1e", title: "#e8c8a8" },
-  { spine: "#1e4a4a", title: "#a8e6e6" },
-  { spine: "#3a3a1e", title: "#e0dda8" },
-  { spine: "#6e1e4a", title: "#f4a0cc" },
-];
-
-function makeTextBlock(value: string, id: number): ContentBlock {
+function tb(value: string, id: number): ContentBlock {
   return { id, type: "text", value };
 }
 
-const INITIAL_BOOKS: Book[] = [
+const BOOKS: Book[] = [
   {
     id: 1,
     spineColor: "#1e3a6e",
@@ -49,15 +37,13 @@ const INITIAL_BOOKS: Book[] = [
         id: 1,
         heading: "On Building at Scale",
         date: "March 2024",
-        bookmarked: false,
-        blocks: [makeTextBlock(`Every system I've built has taught me the same thing: simplicity is the hardest thing to achieve. Not simplicity of appearance — that's easy with good design — but simplicity of mechanism.\n\nWhen I built QuantumDB's consensus layer, I spent three weeks making it correct, and three months making it simple. The simple version was the one that actually worked under chaos testing.\n\nThe temptation is always to add — another abstraction, another config flag, another edge case handler. The discipline is knowing when the right answer is to remove.`, 10)],
+        blocks: [tb(`Every system I've built has taught me the same thing: simplicity is the hardest thing to achieve. Not simplicity of appearance — that's easy with good design — but simplicity of mechanism.\n\nWhen I built QuantumDB's consensus layer, I spent three weeks making it correct, and three months making it simple. The simple version was the one that actually worked under chaos testing.\n\nThe temptation is always to add — another abstraction, another config flag, another edge case handler. The discipline is knowing when the right answer is to remove.`, 10)],
       },
       {
         id: 2,
         heading: "What Distributed Systems Taught Me About People",
         date: "April 2024",
-        bookmarked: false,
-        blocks: [makeTextBlock(`A distributed system assumes its nodes will fail. It doesn't panic when one goes down — it routes around it, keeps consensus, maintains availability.\n\nI think the best teams work this way too. Single points of failure are architectural mistakes in both systems and organizations.\n\nThe healthiest codebase I've ever worked in was the one where any engineer could be hit by a bus tomorrow and the project would still ship. Not because people were replaceable, but because knowledge was distributed.`, 11)],
+        blocks: [tb(`A distributed system assumes its nodes will fail. It doesn't panic when one goes down — it routes around it, keeps consensus, maintains availability.\n\nI think the best teams work this way too. Single points of failure are architectural mistakes in both systems and organizations.\n\nThe healthiest codebase I've ever worked in was the one where any engineer could be hit by a bus tomorrow and the project would still ship. Not because people were replaceable, but because knowledge was distributed.`, 11)],
       },
     ],
   },
@@ -71,15 +57,13 @@ const INITIAL_BOOKS: Book[] = [
         id: 1,
         heading: "The Internet Deserves Better Infrastructure",
         date: "February 2024",
-        bookmarked: false,
-        blocks: [makeTextBlock(`Every day I use tools that were built 30 years ago for a world that no longer exists. TCP/IP assumptions, DNS architecture, TLS handshakes — brilliant for their era, increasingly hostile to the things we're trying to build.\n\nI think the next decade belongs to whoever rebuilds the foundational layer. Not with blockchain hype or AI buzzwords — but with boring, rigorous engineering that makes the defaults better.\n\nLocalMesh is my attempt at one small part of this. Edge-first networking where the architecture assumes the cloud is optional, not central.`, 12)],
+        blocks: [tb(`Every day I use tools that were built 30 years ago for a world that no longer exists. TCP/IP assumptions, DNS architecture, TLS handshakes — brilliant for their era, increasingly hostile to the things we're trying to build.\n\nI think the next decade belongs to whoever rebuilds the foundational layer. Not with blockchain hype or AI buzzwords — but with boring, rigorous engineering that makes the defaults better.\n\nLocalMesh is my attempt at one small part of this. Edge-first networking where the architecture assumes the cloud is optional, not central.`, 12)],
       },
       {
         id: 2,
         heading: "Why I Write Open Source",
         date: "January 2024",
-        bookmarked: false,
-        blocks: [makeTextBlock(`Not for the GitHub stars. Not for the resume line.\n\nI write open source because it's the only software that gets genuinely reviewed. Corporate code lives behind walls. Open source code lives in public, and the public is ruthless.\n\nEvery issue filed is someone who cared enough to report it. Every PR is someone who cared enough to fix it. The collaborative surface of open source is the closest thing to a peer-reviewed journal that software has.\n\nI want my work reviewed.`, 13)],
+        blocks: [tb(`Not for the GitHub stars. Not for the resume line.\n\nI write open source because it's the only software that gets genuinely reviewed. Corporate code lives behind walls. Open source code lives in public, and the public is ruthless.\n\nEvery issue filed is someone who cared enough to report it. Every PR is someone who cared enough to fix it. The collaborative surface of open source is the closest thing to a peer-reviewed journal that software has.\n\nI want my work reviewed.`, 13)],
       },
     ],
   },
@@ -93,158 +77,35 @@ const INITIAL_BOOKS: Book[] = [
         id: 1,
         heading: "Things I Learned the Hard Way",
         date: "May 2024",
-        bookmarked: false,
-        blocks: [makeTextBlock(`1. Premature optimization is real, but so is premature abstraction. I've shipped more bugs from over-engineering than from under-engineering.\n\n2. The best commit message is a short story. "Fix bug" is a confession; "Prevent race condition in cache invalidation when..." is documentation.\n\n3. Sleep is not optional. I spent a week debugging a heisenbug that disappeared after I slept on it. Literally. The bug was in my mental model, not the code.\n\n4. Write the test first not because it's correct dogma but because it forces you to think about the interface before the implementation.`, 14)],
+        blocks: [tb(`1. Premature optimization is real, but so is premature abstraction. I've shipped more bugs from over-engineering than from under-engineering.\n\n2. The best commit message is a short story. "Fix bug" is a confession; "Prevent race condition in cache invalidation when..." is documentation.\n\n3. Sleep is not optional. I spent a week debugging a heisenbug that disappeared after I slept on it. Literally. The bug was in my mental model, not the code.\n\n4. Write the test first not because it's correct dogma but because it forces you to think about the interface before the implementation.`, 14)],
       },
       {
         id: 2,
         heading: "On Curiosity as a Career Strategy",
         date: "May 2024",
-        bookmarked: false,
-        blocks: [makeTextBlock(`Every interesting project I've worked on started with a question I couldn't stop thinking about.\n\nQuantumDB: "How does Raft actually work? Could I implement it?"\nNeural Canvas: "What if artists could describe texture the same way they describe emotion?"\nDrift: "Why does real-time collaboration still feel like magic instead of just working?"\n\nThe questions weren't strategic. They were just genuinely interesting to me. The strategy came later, after the work existed.\n\nIf you're looking for the secret to building interesting things: cultivate better questions.`, 15)],
+        blocks: [tb(`Every interesting project I've worked on started with a question I couldn't stop thinking about.\n\nQuantumDB: "How does Raft actually work? Could I implement it?"\nNeural Canvas: "What if artists could describe texture the same way they describe emotion?"\nDrift: "Why does real-time collaboration still feel like magic instead of just working?"\n\nThe questions weren't strategic. They were just genuinely interesting to me. The strategy came later, after the work existed.\n\nIf you're looking for the secret to building interesting things: cultivate better questions.`, 15)],
       },
     ],
   },
 ];
 
-let nextId = 200;
-
 export default function Books() {
-  const [books, setBooks] = useState<Book[]>(INITIAL_BOOKS);
   const [openBookId, setOpenBookId] = useState<number | null>(null);
   const [view, setView] = useState<"read" | "index">("read");
-  const [addingChapter, setAddingChapter] = useState(false);
-  const [newHeading, setNewHeading] = useState("");
-  const [newBody, setNewBody] = useState("");
-  const [pendingImageChapterId, setPendingImageChapterId] = useState<number | null>(null);
-  const [pendingImageAfterBlockId, setPendingImageAfterBlockId] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const chapterRefs = useRef<Map<number, HTMLDivElement>>(new Map());
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  // Book management
-  const [addingBook, setAddingBook] = useState(false);
-  const [newBookTitle, setNewBookTitle] = useState("");
-  const [newBookPalette, setNewBookPalette] = useState(0);
-  const [confirmDeleteBookId, setConfirmDeleteBookId] = useState<number | null>(null);
-
-  const book = books.find(b => b.id === openBookId) ?? null;
-  const bookmarkedCount = book ? book.chapters.filter(c => c.bookmarked).length : 0;
-
-  const createBook = () => {
-    if (!newBookTitle.trim()) return;
-    const palette = SPINE_PALETTE[newBookPalette % SPINE_PALETTE.length];
-    const newBook: Book = {
-      id: nextId++,
-      spineColor: palette.spine,
-      titleColor: palette.title,
-      title: newBookTitle.trim(),
-      chapters: [],
-    };
-    setBooks(prev => [...prev, newBook]);
-    setNewBookTitle("");
-    setNewBookPalette(0);
-    setAddingBook(false);
-  };
-
-  const deleteBook = (id: number) => {
-    setBooks(prev => prev.filter(b => b.id !== id));
-    setConfirmDeleteBookId(null);
-    if (openBookId === id) closeBook();
-  };
-
-  const openBook = (id: number) => {
-    setOpenBookId(id);
-    setView("read");
-    setAddingChapter(false);
-    setNewHeading("");
-    setNewBody("");
-  };
+  const book = BOOKS.find(b => b.id === openBookId) ?? null;
 
   const closeBook = () => {
     setOpenBookId(null);
     setView("read");
-    setAddingChapter(false);
-  };
-
-  const mutateBook = useCallback((updater: (b: Book) => Book) => {
-    setBooks(prev => prev.map(b => b.id === openBookId ? updater(b) : b));
-  }, [openBookId]);
-
-  const toggleBookmark = (chapterId: number) => {
-    mutateBook(b => ({
-      ...b,
-      chapters: b.chapters.map(c =>
-        c.id === chapterId ? { ...c, bookmarked: !c.bookmarked } : c
-      ),
-    }));
-  };
-
-  const deleteChapter = (chapterId: number) => {
-    mutateBook(b => ({ ...b, chapters: b.chapters.filter(c => c.id !== chapterId) }));
-  };
-
-  const addChapter = () => {
-    if (!newHeading.trim()) return;
-    const chapter: Chapter = {
-      id: nextId++,
-      heading: newHeading.trim(),
-      date: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
-      blocks: newBody.trim() ? [makeTextBlock(newBody.trim(), nextId++)] : [],
-      bookmarked: false,
-    };
-    mutateBook(b => ({ ...b, chapters: [...b.chapters, chapter] }));
-    setNewHeading("");
-    setNewBody("");
-    setAddingChapter(false);
   };
 
   const scrollToChapter = (chapterId: number) => {
     setView("read");
     setTimeout(() => {
-      const el = chapterRefs.current.get(chapterId);
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      chapterRefs.current.get(chapterId)?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
-  };
-
-  const triggerImageUpload = (chapterId: number, afterBlockId: number | null) => {
-    setPendingImageChapterId(chapterId);
-    setPendingImageAfterBlockId(afterBlockId);
-    fileInputRef.current?.click();
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || pendingImageChapterId === null) return;
-    const url = URL.createObjectURL(file);
-    const newBlock: ContentBlock = { id: nextId++, type: "image", value: url };
-
-    mutateBook(b => ({
-      ...b,
-      chapters: b.chapters.map(c => {
-        if (c.id !== pendingImageChapterId) return c;
-        if (pendingImageAfterBlockId === null) {
-          return { ...c, blocks: [...c.blocks, newBlock] };
-        }
-        const idx = c.blocks.findIndex(bl => bl.id === pendingImageAfterBlockId);
-        const updated = [...c.blocks];
-        updated.splice(idx + 1, 0, newBlock);
-        return { ...c, blocks: updated };
-      }),
-    }));
-
-    setPendingImageChapterId(null);
-    setPendingImageAfterBlockId(null);
-    e.target.value = "";
-  };
-
-  const deleteBlock = (chapterId: number, blockId: number) => {
-    mutateBook(b => ({
-      ...b,
-      chapters: b.chapters.map(c =>
-        c.id === chapterId ? { ...c, blocks: c.blocks.filter(bl => bl.id !== blockId) } : c
-      ),
-    }));
   };
 
   return (
@@ -257,10 +118,10 @@ export default function Books() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
       >
-          {books.map((b, i) => (
+        {BOOKS.map((b, i) => (
           <motion.div
             key={b.id}
-            className="cursor-pointer relative rounded-sm select-none group/spine"
+            className="cursor-pointer relative rounded-sm select-none"
             style={{
               width: 26,
               height: 110 + i * 15,
@@ -270,10 +131,7 @@ export default function Books() {
             }}
             whileHover={{ y: -12, scale: 1.05, boxShadow: "4px 12px 30px rgba(0,0,0,0.6)" }}
             transition={{ type: "spring", stiffness: 300, damping: 15 }}
-            onClick={() => {
-              if (confirmDeleteBookId === b.id) return;
-              openBook(b.id);
-            }}
+            onClick={() => { setOpenBookId(b.id); setView("read"); }}
             data-testid={`book-${b.id}`}
           >
             <div
@@ -291,108 +149,9 @@ export default function Books() {
             >
               {b.title}
             </div>
-            {/* Delete button — appears on hover */}
-            <button
-              className="absolute top-1 left-1/2 -translate-x-1/2 rounded-full font-mono flex items-center justify-center opacity-0 group-hover/spine:opacity-100 transition-opacity"
-              style={{ width: 14, height: 14, background: "rgba(0,0,0,0.55)", color: "rgba(255,200,180,0.9)", fontSize: "10px", lineHeight: 1, zIndex: 10 }}
-              onClick={e => {
-                e.stopPropagation();
-                if (confirmDeleteBookId === b.id) {
-                  deleteBook(b.id);
-                } else {
-                  setConfirmDeleteBookId(b.id);
-                  setTimeout(() => setConfirmDeleteBookId(null), 2500);
-                }
-              }}
-              title={confirmDeleteBookId === b.id ? "Click again to confirm delete" : "Remove book"}
-            >
-              {confirmDeleteBookId === b.id ? "!" : "×"}
-            </button>
           </motion.div>
         ))}
-
-        {/* Add book button */}
-        <div className="relative" style={{ alignSelf: "flex-end" }}>
-          <motion.button
-            className="relative rounded-sm select-none flex items-center justify-center"
-            style={{
-              width: 22,
-              height: 90,
-              background: addingBook ? "rgba(245,200,100,0.18)" : "rgba(255,255,255,0.06)",
-              border: `1px dashed ${addingBook ? "rgba(245,200,100,0.5)" : "rgba(255,255,255,0.15)"}`,
-              color: addingBook ? "rgba(245,200,100,0.8)" : "rgba(255,255,255,0.25)",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            whileHover={{ background: "rgba(245,200,100,0.12)", borderColor: "rgba(245,200,100,0.4)" }}
-            onClick={() => setAddingBook(v => !v)}
-            title="Add a new book"
-          >
-            {addingBook ? "×" : "+"}
-          </motion.button>
-
-          {/* Add book popover */}
-          <AnimatePresence>
-            {addingBook && (
-              <motion.div
-                className="absolute"
-                style={{ bottom: 0, right: 30, zIndex: 50, width: 200 }}
-                initial={{ opacity: 0, x: 8, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 8, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                onClick={e => e.stopPropagation()}
-              >
-                <div
-                  className="rounded-lg p-3"
-                  style={{ background: "#1a1510", border: "1px solid rgba(245,200,100,0.2)", boxShadow: "0 16px 40px rgba(0,0,0,0.6)" }}
-                >
-                  <div className="font-mono text-xs mb-2" style={{ color: "rgba(245,200,100,0.5)" }}>new book</div>
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    value={newBookTitle}
-                    onChange={e => setNewBookTitle(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter") createBook(); }}
-                    autoFocus
-                    className="w-full font-serif text-sm outline-none bg-transparent border-b mb-3"
-                    style={{ color: "#f5e8c8", borderColor: "rgba(245,200,100,0.25)", paddingBottom: 4 }}
-                    maxLength={24}
-                  />
-                  {/* Color swatches */}
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {SPINE_PALETTE.map((p, idx) => (
-                      <button
-                        key={idx}
-                        className="rounded-sm transition-all"
-                        style={{
-                          width: 18,
-                          height: 18,
-                          background: p.spine,
-                          outline: newBookPalette === idx ? `2px solid rgba(245,200,100,0.8)` : "2px solid transparent",
-                          outlineOffset: 1,
-                        }}
-                        onClick={() => setNewBookPalette(idx)}
-                        title={`Color ${idx + 1}`}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    className="font-mono text-xs w-full py-1.5 rounded transition-opacity hover:opacity-80"
-                    style={{ background: SPINE_PALETTE[newBookPalette].spine, color: SPINE_PALETTE[newBookPalette].title }}
-                    onClick={createBook}
-                  >
-                    add book
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
       </motion.div>
-
-      {/* Hidden file input */}
-      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
 
       {/* Book modal */}
       <AnimatePresence>
@@ -408,14 +167,7 @@ export default function Books() {
           >
             <motion.div
               className="relative flex flex-col"
-              style={{
-                width: 600,
-                maxHeight: "80vh",
-                background: "#f8f3e8",
-                borderRadius: 6,
-                boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
-                overflow: "hidden",
-              }}
+              style={{ width: 580, maxHeight: "80vh", background: "#f8f3e8", borderRadius: 6, boxShadow: "0 32px 80px rgba(0,0,0,0.6)", overflow: "hidden" }}
               initial={{ scale: 0.85, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.85, y: 20 }}
@@ -429,28 +181,10 @@ export default function Books() {
               {/* Header */}
               <div
                 className="flex items-center justify-between shrink-0"
-                style={{
-                  marginLeft: 18,
-                  padding: "14px 18px 11px",
-                  borderBottom: "1px solid rgba(180,160,100,0.25)",
-                  background: "#f8f3e8",
-                  zIndex: 2,
-                }}
+                style={{ marginLeft: 18, padding: "14px 18px 11px", borderBottom: "1px solid rgba(180,160,100,0.25)", background: "#f8f3e8", zIndex: 2 }}
               >
-                <div className="flex items-center gap-3">
-                  <h2 className="font-serif text-xl font-bold" style={{ color: "#2a1a0a" }}>
-                    {book.title}
-                  </h2>
-                  {bookmarkedCount > 0 && (
-                    <span
-                      className="font-mono text-xs px-1.5 py-0.5 rounded"
-                      style={{ background: book.spineColor + "33", color: book.spineColor, fontSize: "9px" }}
-                    >
-                      {bookmarkedCount} bookmarked
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-2 items-center">
+                <h2 className="font-serif text-xl font-bold" style={{ color: "#2a1a0a" }}>{book.title}</h2>
+                <div className="flex gap-3 items-center">
                   <button
                     className="font-mono text-xs px-2.5 py-1 rounded transition-all"
                     style={{
@@ -463,13 +197,6 @@ export default function Books() {
                     {view === "index" ? "reading" : "index"}
                   </button>
                   <button
-                    className="font-mono text-xs px-2.5 py-1 rounded transition-all hover:opacity-80"
-                    style={{ background: book.spineColor, color: book.titleColor }}
-                    onClick={() => { setAddingChapter(v => !v); setView("read"); }}
-                  >
-                    {addingChapter ? "cancel" : "+ chapter"}
-                  </button>
-                  <button
                     className="font-mono text-sm hover:opacity-50 transition-opacity"
                     style={{ color: "#8b7355" }}
                     onClick={closeBook}
@@ -480,18 +207,13 @@ export default function Books() {
                 </div>
               </div>
 
-              {/* Content area */}
-              <div ref={scrollAreaRef} className="overflow-y-auto flex-1" style={{ marginLeft: 18 }}>
+              {/* Content */}
+              <div className="overflow-y-auto flex-1" style={{ marginLeft: 18 }}>
 
                 {/* INDEX VIEW */}
                 {view === "index" && (
                   <div style={{ padding: "16px 20px 24px" }}>
                     <div className="font-mono text-xs mb-4" style={{ color: "#b8966e", letterSpacing: "0.1em" }}>TABLE OF CONTENTS</div>
-                    {book.chapters.length === 0 && (
-                      <div className="font-serif text-center py-8" style={{ color: "rgba(139,115,85,0.4)" }}>
-                        No chapters yet.
-                      </div>
-                    )}
                     {book.chapters.map((c, idx) => (
                       <motion.button
                         key={c.id}
@@ -504,15 +226,10 @@ export default function Books() {
                         <span className="font-mono shrink-0" style={{ color: "#c8a878", fontSize: "11px", marginTop: 3 }}>
                           {String(idx + 1).padStart(2, "0")}
                         </span>
-                        <div className="flex-1">
-                          <div className="font-serif text-base font-bold group-hover:underline" style={{ color: "#2a1a0a" }}>
-                            {c.heading}
-                          </div>
+                        <div>
+                          <div className="font-serif text-base font-bold group-hover:underline" style={{ color: "#2a1a0a" }}>{c.heading}</div>
                           <div className="font-mono text-xs mt-0.5" style={{ color: "#b8966e" }}>{c.date}</div>
                         </div>
-                        {c.bookmarked && (
-                          <span style={{ color: book.spineColor, fontSize: "14px" }}>🔖</span>
-                        )}
                       </motion.button>
                     ))}
                   </div>
@@ -521,175 +238,23 @@ export default function Books() {
                 {/* READING VIEW */}
                 {view === "read" && (
                   <div style={{ padding: "0 20px 28px" }}>
-                    {/* Add chapter form */}
-                    <AnimatePresence>
-                      {addingChapter && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          style={{ overflow: "hidden", borderBottom: "1px solid rgba(180,160,100,0.25)", paddingTop: 16, paddingBottom: 16, marginBottom: 8 }}
-                        >
-                          <div className="font-mono text-xs mb-3" style={{ color: "#b8966e" }}>new chapter</div>
-                          <input
-                            type="text"
-                            placeholder="Chapter heading"
-                            value={newHeading}
-                            onChange={e => setNewHeading(e.target.value)}
-                            className="w-full font-serif text-base outline-none mb-3 bg-transparent border-b"
-                            style={{ color: "#2a1a0a", borderColor: "rgba(180,160,100,0.4)", paddingBottom: 6 }}
-                          />
-                          <textarea
-                            placeholder="Write your thoughts here..."
-                            value={newBody}
-                            onChange={e => setNewBody(e.target.value)}
-                            rows={4}
-                            className="w-full font-sans text-sm outline-none bg-transparent resize-none"
-                            style={{ color: "#3a2a1a", lineHeight: 1.7, borderBottom: "1px solid rgba(180,160,100,0.18)", paddingBottom: 8 }}
-                          />
-                          <div className="flex gap-3 mt-3">
-                            <button
-                              className="font-mono text-xs px-4 py-1.5 rounded hover:opacity-80 transition-opacity"
-                              style={{ background: book.spineColor, color: book.titleColor }}
-                              onClick={addChapter}
-                            >
-                              save chapter
-                            </button>
-                            <button
-                              className="font-mono text-xs hover:opacity-50 transition-opacity"
-                              style={{ color: "#8b7355" }}
-                              onClick={() => setAddingChapter(false)}
-                            >
-                              discard
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {book.chapters.length === 0 && !addingChapter && (
-                      <div className="font-serif text-center py-12" style={{ color: "rgba(139,115,85,0.4)", fontSize: "14px" }}>
-                        No chapters yet. Add one above.
-                      </div>
-                    )}
-
                     {book.chapters.map((chapter, idx) => (
                       <div
                         key={chapter.id}
                         ref={el => { if (el) chapterRefs.current.set(chapter.id, el); }}
-                        style={{
-                          paddingTop: 24,
-                          paddingBottom: 24,
-                          borderBottom: idx < book.chapters.length - 1 ? "1px solid rgba(180,160,100,0.18)" : "none",
-                        }}
+                        style={{ paddingTop: 24, paddingBottom: 24, borderBottom: idx < book.chapters.length - 1 ? "1px solid rgba(180,160,100,0.18)" : "none" }}
                       >
-                        {/* Chapter header row */}
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="font-mono text-xs" style={{ color: "#b8966e" }}>
-                            {chapter.date}
-                          </div>
-                          <div className="flex items-center gap-3">
-                            {/* Bookmark */}
-                            <button
-                              onClick={() => toggleBookmark(chapter.id)}
-                              className="transition-all hover:scale-110"
-                              title={chapter.bookmarked ? "Remove bookmark" : "Bookmark"}
-                              style={{ fontSize: "14px", opacity: chapter.bookmarked ? 1 : 0.3 }}
-                            >
-                              🔖
-                            </button>
-                            {/* Add image */}
-                            <button
-                              onClick={() => triggerImageUpload(chapter.id, chapter.blocks.length > 0 ? chapter.blocks[chapter.blocks.length - 1].id : null)}
-                              className="font-mono text-xs hover:opacity-70 transition-opacity"
-                              style={{ color: "#b8966e" }}
-                              title="Add image to this chapter"
-                            >
-                              + img
-                            </button>
-                            {/* Delete chapter */}
-                            <button
-                              onClick={() => deleteChapter(chapter.id)}
-                              className="font-mono text-xs hover:opacity-60 transition-opacity"
-                              style={{ color: "#c0a080" }}
-                              data-testid={`delete-chapter-${chapter.id}`}
-                            >
-                              delete
-                            </button>
-                          </div>
-                        </div>
-
-                        <h3 className="font-serif text-lg font-bold mb-3" style={{ color: "#2a1a0a", lineHeight: 1.25 }}>
-                          {chapter.heading}
-                        </h3>
-
-                        {/* Content blocks */}
-                        {chapter.blocks.map((block, bIdx) => (
-                          <div key={block.id} className="relative group mb-3">
+                        <div className="font-mono text-xs mb-1" style={{ color: "#b8966e" }}>{chapter.date}</div>
+                        <h3 className="font-serif text-lg font-bold mb-3" style={{ color: "#2a1a0a", lineHeight: 1.25 }}>{chapter.heading}</h3>
+                        {chapter.blocks.map(block => (
+                          <div key={block.id} className="mb-3">
                             {block.type === "text" ? (
-                              <p className="font-sans text-sm leading-relaxed" style={{ color: "#3a2a1a", whiteSpace: "pre-line" }}>
-                                {block.value}
-                              </p>
+                              <p className="font-sans text-sm leading-relaxed" style={{ color: "#3a2a1a", whiteSpace: "pre-line" }}>{block.value}</p>
                             ) : (
-                              <div className="relative">
-                                <img
-                                  src={block.value}
-                                  alt="chapter image"
-                                  className="rounded-sm w-full"
-                                  style={{ maxHeight: 260, objectFit: "cover", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }}
-                                />
-                                <button
-                                  onClick={() => deleteBlock(chapter.id, block.id)}
-                                  className="absolute top-2 right-2 rounded-full font-mono text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                                  style={{
-                                    background: "rgba(0,0,0,0.6)",
-                                    color: "white",
-                                    width: 22,
-                                    height: 22,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                  title="Remove image"
-                                >
-                                  ×
-                                </button>
-                              </div>
+                              <img src={block.value} alt="chapter image" className="rounded-sm w-full" style={{ maxHeight: 260, objectFit: "cover", boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }} />
                             )}
-
-                            {/* Insert image after this block */}
-                            <div className="flex justify-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                onClick={() => triggerImageUpload(chapter.id, block.id)}
-                                className="font-mono text-xs rounded-full px-3 py-0.5 transition-all hover:opacity-80"
-                                style={{
-                                  background: "rgba(180,160,100,0.15)",
-                                  color: "#b8966e",
-                                  border: "1px dashed rgba(180,160,100,0.4)",
-                                  fontSize: "9px",
-                                }}
-                              >
-                                insert image here
-                              </button>
-                            </div>
                           </div>
                         ))}
-
-                        {/* Add image at end if no blocks or last block is text */}
-                        {(chapter.blocks.length === 0 || chapter.blocks[chapter.blocks.length - 1].type === "text") && (
-                          <button
-                            onClick={() => triggerImageUpload(chapter.id, chapter.blocks.length > 0 ? chapter.blocks[chapter.blocks.length - 1].id : null)}
-                            className="font-mono text-xs mt-2 rounded-sm px-3 py-1.5 w-full transition-all hover:opacity-80"
-                            style={{
-                              background: "rgba(180,160,100,0.08)",
-                              color: "#b8966e",
-                              border: "1px dashed rgba(180,160,100,0.3)",
-                              fontSize: "9px",
-                            }}
-                          >
-                            + add image to chapter
-                          </button>
-                        )}
                       </div>
                     ))}
                   </div>

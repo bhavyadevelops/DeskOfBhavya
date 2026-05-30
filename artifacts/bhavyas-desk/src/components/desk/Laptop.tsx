@@ -11,102 +11,121 @@ interface Project {
   accent: string;
 }
 
-const INITIAL_PROJECTS: Project[] = [
+const PROJECTS: Project[] = [
   {
     id: 1,
-    name: "Neural Canvas",
-    desc: "An AI-powered generative art platform that turns text prompts into cinematic, layered visual compositions. Built for artists who want to explore machine creativity.",
-    stack: ["Python", "PyTorch", "React", "WebGL"],
-    github: "https://github.com/bhavya/neural-canvas",
-    demo: "https://neuralcanvas.app",
-    accent: "#7c3aed",
+    name: "Project QUANTEX",
+    desc: "An AI-powered platform that connects users with verified technicians for fast, reliable technical support. Users can book on-demand assistance, describe issues through text or images, receive smart technician recommendations, track service requests, and access support from a single interface. Built to simplify technical problem-solving, QUANTEX reduces search time and improves access to trusted expertise.",
+    stack: ["Artificial Intelligence", "Web Development", "Technical Support", "Service Marketplace", "SaaS", "Startup"],
+    github: "https://github.com/bhavyadevelops/Project-QUANTEX",
+    demo: "https://tech-support-connect--bhavyachokshi36.replit.app",
+    accent: "#6366f1",
   },
   {
     id: 2,
-    name: "QuantumDB",
-    desc: "A distributed key-value store implementing the Raft consensus algorithm from scratch. Achieves sub-millisecond reads with strong consistency guarantees across 5-node clusters.",
-    stack: ["Go", "gRPC", "Raft", "RocksDB"],
-    github: "https://github.com/bhavya/quantumdb",
-    demo: null,
-    accent: "#0891b2",
+    name: "Spotify Web v1.0",
+    desc: "A modern reimagination of Spotify with a sleek, immersive UI focused on simplicity, speed, and user experience. Features a visually rich music dashboard, smooth navigation, responsive design, and a premium listening experience that blends aesthetics with functionality. Built to showcase modern frontend development, interactive design, and a fresh take on music streaming platforms.",
+    stack: ["ReactJS", "TypeScript", "UI/UX Design", "Responsive Web Design", "Music Streaming", "Product Design"],
+    github: "https://github.com/bhavyadevelops/Spotify-Reimagined",
+    demo: "https://spotify-reimagined.vercel.app",
+    accent: "#1db954",
   },
   {
     id: 3,
-    name: "Drift",
-    desc: "A real-time collaborative design tool with multiplayer cursors, component versioning, and a constraint-based layout engine. Think Figma but open source.",
-    stack: ["TypeScript", "WebSockets", "Canvas API", "CRDTs"],
-    github: "https://github.com/bhavya/drift",
-    demo: "https://drift.design",
-    accent: "#059669",
-  },
-  {
-    id: 4,
-    name: "Atlas",
-    desc: "A geospatial SaaS platform for logistics teams to visualize delivery routes, optimize last-mile delivery, and run fleet analytics on live GPS data.",
-    stack: ["Next.js", "Mapbox", "PostgreSQL", "TimescaleDB"],
-    github: "https://github.com/bhavya/atlas",
-    demo: "https://atlas-logistics.io",
-    accent: "#d97706",
+    name: "AIATS",
+    desc: "An AI-powered ATS Resume Analyzer that evaluates resume-job fit, scores ATS compatibility, identifies missing keywords, and generates personalized optimization suggestions. Designed to help candidates improve recruiter visibility, increase interview opportunities, and tailor resumes for specific roles through intelligent AI-driven feedback.",
+    stack: ["Artificial Intelligence", "NLP", "ATS Optimization", "Generative AI", "Career Development", "Recruitment Tech"],
+    github: "https://github.com/bhavyadevelops/AIATS",
+    demo: null,
+    accent: "#f59e0b",
   },
 ];
 
 export default function Laptop() {
   const [open, setOpen] = useState(false);
-  const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
   const [activeProject, setActiveProject] = useState(0);
-  const [editMode, setEditMode] = useState(false);
-  const [newTag, setNewTag] = useState("");
 
-  const proj = projects[activeProject];
-
-  const updateProj = (field: keyof Project, value: string | string[] | null) => {
-    setProjects(prev =>
-      prev.map((p, i) => i === activeProject ? { ...p, [field]: value } : p)
-    );
-  };
-
-  const removeTag = (tag: string) => {
-    updateProj("stack", proj.stack.filter(t => t !== tag));
-  };
-
-  const addTag = () => {
-    const t = newTag.trim();
-    if (!t || proj.stack.includes(t)) return;
-    updateProj("stack", [...proj.stack, t]);
-    setNewTag("");
-  };
-
-  const handleTabChange = (idx: number) => {
-    setActiveProject(idx);
-    setEditMode(false);
-    setNewTag("");
-  };
-
-  const closeModal = () => {
-    setOpen(false);
-    setEditMode(false);
-    setNewTag("");
-  };
+  const proj = PROJECTS[activeProject];
 
   return (
     <>
-      {/* Desk object — closed laptop */}
+      {/* Desk object — open laptop screen */}
       <motion.div
         className="absolute cursor-pointer select-none"
-        style={{ top: "32%", left: "26%" }}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        style={{ top: "26%", left: "50%", transform: "translateX(-50%)" }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
         onClick={() => setOpen(true)}
-        whileHover={{ y: -3 }}
+        whileHover={{ y: -4 }}
         data-testid="laptop"
       >
-        <div style={{ width: 200, height: 6, background: "linear-gradient(180deg, #3a3a3a 0%, #252525 100%)", borderRadius: "4px 4px 0 0", boxShadow: "0 -1px 0 rgba(255,255,255,0.06) inset" }} />
-        <div style={{ width: 200, height: 12, background: "linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%)", borderRadius: "0 0 5px 5px", boxShadow: "0 6px 20px rgba(0,0,0,0.5)", position: "relative" }}>
-          <div style={{ position: "absolute", width: 50, height: 6, background: "rgba(255,255,255,0.04)", borderRadius: 2, border: "1px solid rgba(255,255,255,0.06)", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
+        {/* Screen */}
+        <div
+          style={{
+            width: 220,
+            background: "#0f0f14",
+            borderRadius: "8px 8px 2px 2px",
+            border: "2.5px solid #2a2a30",
+            padding: "7px 8px 6px",
+            boxShadow: "0 0 28px rgba(99,102,241,0.18), 0 0 60px rgba(0,0,0,0.5)",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* Screen ambient glow */}
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(99,102,241,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+          {/* Title bar */}
+          <div className="flex items-center gap-1 mb-2">
+            <div className="rounded-full" style={{ width: 5, height: 5, background: "#ff5f57" }} />
+            <div className="rounded-full" style={{ width: 5, height: 5, background: "#ffbd2e" }} />
+            <div className="rounded-full" style={{ width: 5, height: 5, background: "#28c940" }} />
+            <div className="font-mono flex-1 text-center" style={{ color: "rgba(255,255,255,0.18)", fontSize: "7px" }}>bhavya — projects</div>
+          </div>
+
+          {/* Project list */}
+          <div style={{ padding: "4px 0" }}>
+            {PROJECTS.map((p) => (
+              <div
+                key={p.id}
+                className="font-mono flex items-center gap-1.5 py-0.5"
+                style={{ fontSize: "8px", color: "rgba(255,255,255,0.3)" }}
+              >
+                <div className="rounded-full" style={{ width: 4, height: 4, background: p.accent, opacity: 0.7, flexShrink: 0 }} />
+                {p.name}
+              </div>
+            ))}
+          </div>
+
+          {/* Blinking cursor */}
+          <div className="font-mono mt-2 flex items-center gap-1" style={{ fontSize: "8px", color: "rgba(99,102,241,0.6)" }}>
+            <span>›</span>
+            <motion.span animate={{ opacity: [1, 0] }} transition={{ duration: 0.8, repeat: Infinity }}>
+              _
+            </motion.span>
+          </div>
+
+          {/* Click hint */}
+          <div className="text-center mt-2 font-mono" style={{ fontSize: "7px", color: "rgba(255,255,255,0.15)" }}>
+            click to open
+          </div>
         </div>
-        <div className="font-mono text-center mt-1" style={{ color: "rgba(255,255,255,0.25)", fontSize: "8px", letterSpacing: "0.1em" }}>
-          click to open
+
+        {/* Hinge */}
+        <div style={{ width: 230, height: 5, background: "linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%)", marginLeft: -5, borderRadius: "0 0 2px 2px" }} />
+
+        {/* Keyboard base */}
+        <div style={{
+          width: 240,
+          height: 16,
+          background: "linear-gradient(180deg, #222 0%, #1a1a1a 100%)",
+          marginLeft: -10,
+          borderRadius: "0 0 6px 6px",
+          boxShadow: "0 6px 18px rgba(0,0,0,0.5)",
+          position: "relative",
+        }}>
+          <div style={{ position: "absolute", width: 40, height: 5, background: "rgba(255,255,255,0.03)", borderRadius: 2, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }} />
         </div>
       </motion.div>
 
@@ -119,7 +138,7 @@ export default function Laptop() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeModal}
+            onClick={() => setOpen(false)}
             data-testid="laptop-modal-overlay"
           >
             <motion.div
@@ -138,26 +157,12 @@ export default function Laptop() {
                 style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", zIndex: 2 }}
               >
                 <div className="flex gap-1.5">
-                  <button onClick={closeModal} className="w-3 h-3 rounded-full hover:opacity-70 transition-opacity" style={{ background: "#ff5f57" }} data-testid="laptop-close" />
+                  <button onClick={() => setOpen(false)} className="w-3 h-3 rounded-full hover:opacity-70 transition-opacity" style={{ background: "#ff5f57" }} data-testid="laptop-close" />
                   <div className="w-3 h-3 rounded-full" style={{ background: "#ffbd2e" }} />
                   <div className="w-3 h-3 rounded-full" style={{ background: "#28c940" }} />
                 </div>
-                <div className="font-mono" style={{ color: "rgba(255,255,255,0.22)", fontSize: "10px" }}>
-                  bhavya — projects
-                </div>
-                {/* Edit toggle */}
-                <button
-                  className="font-mono text-xs px-2 py-0.5 rounded transition-all"
-                  style={{
-                    color: editMode ? proj.accent : "rgba(255,255,255,0.3)",
-                    border: `1px solid ${editMode ? proj.accent + "66" : "rgba(255,255,255,0.12)"}`,
-                    background: editMode ? proj.accent + "18" : "transparent",
-                    fontSize: "9px",
-                  }}
-                  onClick={() => setEditMode(v => !v)}
-                >
-                  {editMode ? "done editing" : "edit"}
-                </button>
+                <div className="font-mono" style={{ color: "rgba(255,255,255,0.22)", fontSize: "10px" }}>bhavya — projects</div>
+                <div style={{ width: 48 }} />
               </div>
 
               {/* Sidebar */}
@@ -165,10 +170,8 @@ export default function Laptop() {
                 className="flex flex-col shrink-0"
                 style={{ width: 190, marginTop: 37, borderRight: "1px solid rgba(255,255,255,0.06)", padding: "12px 0", background: "rgba(255,255,255,0.015)" }}
               >
-                <div className="font-mono px-4 mb-2" style={{ color: "rgba(255,255,255,0.18)", fontSize: "9px", letterSpacing: "0.15em" }}>
-                  PROJECTS
-                </div>
-                {projects.map((p, idx) => (
+                <div className="font-mono px-4 mb-2" style={{ color: "rgba(255,255,255,0.18)", fontSize: "9px", letterSpacing: "0.15em" }}>PROJECTS</div>
+                {PROJECTS.map((p, idx) => (
                   <button
                     key={p.id}
                     className="text-left px-4 py-2.5 transition-all"
@@ -177,7 +180,7 @@ export default function Laptop() {
                       borderLeft: activeProject === idx ? `2px solid ${p.accent}` : "2px solid transparent",
                       color: activeProject === idx ? "#fff" : "rgba(255,255,255,0.38)",
                     }}
-                    onClick={() => handleTabChange(idx)}
+                    onClick={() => setActiveProject(idx)}
                     data-testid={`project-tab-${p.id}`}
                   >
                     <div className="font-sans text-sm">{p.name}</div>
@@ -198,128 +201,48 @@ export default function Laptop() {
                   >
                     <div className="w-8 h-0.5 mb-4 rounded-full" style={{ background: proj.accent }} />
 
-                    {/* Name */}
-                    {editMode ? (
-                      <input
-                        className="font-serif text-2xl font-bold w-full outline-none bg-transparent border-b mb-3"
-                        style={{ color: "#fff", borderColor: "rgba(255,255,255,0.15)", paddingBottom: 4 }}
-                        value={proj.name}
-                        onChange={e => updateProj("name", e.target.value)}
-                        placeholder="Project name"
-                      />
-                    ) : (
-                      <h2 className="font-serif text-2xl font-bold mb-3" style={{ color: "#fff" }}>
-                        {proj.name}
-                      </h2>
-                    )}
+                    <h2 className="font-serif text-2xl font-bold mb-3" style={{ color: "#fff" }}>
+                      {proj.name}
+                    </h2>
 
-                    {/* Description */}
-                    {editMode ? (
-                      <textarea
-                        className="font-sans text-sm w-full outline-none bg-transparent border rounded resize-none flex-1 mb-0"
-                        style={{ color: "rgba(255,255,255,0.7)", borderColor: "rgba(255,255,255,0.1)", padding: "8px 10px", lineHeight: 1.6, minHeight: 80 }}
-                        value={proj.desc}
-                        onChange={e => updateProj("desc", e.target.value)}
-                        placeholder="Project description"
-                        rows={4}
-                      />
-                    ) : (
-                      <p className="font-sans text-sm leading-relaxed flex-1" style={{ color: "rgba(255,255,255,0.6)" }}>
-                        {proj.desc}
-                      </p>
-                    )}
+                    <p className="font-sans text-sm leading-relaxed flex-1" style={{ color: "rgba(255,255,255,0.6)" }}>
+                      {proj.desc}
+                    </p>
 
-                    {/* Stack tags */}
                     <div className="flex flex-wrap gap-2 mt-4">
                       {proj.stack.map(t => (
                         <span
                           key={t}
-                          className="font-mono text-xs px-2 py-0.5 rounded flex items-center gap-1"
+                          className="font-mono text-xs px-2 py-0.5 rounded"
                           style={{ background: `${proj.accent}22`, color: proj.accent, border: `1px solid ${proj.accent}44` }}
                         >
                           {t}
-                          {editMode && (
-                            <button
-                              className="opacity-50 hover:opacity-100 transition-opacity ml-0.5"
-                              style={{ fontSize: "10px", lineHeight: 1 }}
-                              onClick={() => removeTag(t)}
-                            >
-                              ×
-                            </button>
-                          )}
                         </span>
                       ))}
-                      {editMode && (
-                        <div className="flex items-center gap-1">
-                          <input
-                            className="font-mono text-xs outline-none bg-transparent border rounded px-2 py-0.5"
-                            style={{ color: "rgba(255,255,255,0.5)", borderColor: "rgba(255,255,255,0.15)", width: 80 }}
-                            placeholder="+ add tag"
-                            value={newTag}
-                            onChange={e => setNewTag(e.target.value)}
-                            onKeyDown={e => { if (e.key === "Enter") addTag(); }}
-                          />
-                          <button
-                            className="font-mono text-xs px-2 py-0.5 rounded hover:opacity-70 transition-opacity"
-                            style={{ color: proj.accent, border: `1px solid ${proj.accent}55` }}
-                            onClick={addTag}
-                          >
-                            add
-                          </button>
-                        </div>
-                      )}
                     </div>
 
-                    {/* Links */}
-                    <div className="flex gap-4 mt-4">
-                      {editMode ? (
-                        <>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>gh:</span>
-                            <input
-                              className="font-mono text-xs outline-none bg-transparent border-b"
-                              style={{ color: "rgba(255,255,255,0.4)", borderColor: "rgba(255,255,255,0.12)", width: 160, paddingBottom: 2 }}
-                              value={proj.github}
-                              onChange={e => updateProj("github", e.target.value)}
-                              placeholder="GitHub URL"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>demo:</span>
-                            <input
-                              className="font-mono text-xs outline-none bg-transparent border-b"
-                              style={{ color: proj.accent, borderColor: "rgba(255,255,255,0.12)", width: 140, paddingBottom: 2 }}
-                              value={proj.demo ?? ""}
-                              onChange={e => updateProj("demo", e.target.value || null)}
-                              placeholder="Demo URL (optional)"
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <a
-                            href={proj.github}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-mono text-sm underline hover:opacity-60 transition-opacity"
-                            style={{ color: "rgba(255,255,255,0.4)" }}
-                            data-testid={`project-github-${proj.id}`}
-                          >
-                            GitHub
-                          </a>
-                          {proj.demo && (
-                            <a
-                              href={proj.demo}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="font-mono text-sm underline hover:opacity-60 transition-opacity"
-                              style={{ color: proj.accent }}
-                              data-testid={`project-demo-${proj.id}`}
-                            >
-                              Live Demo
-                            </a>
-                          )}
-                        </>
+                    <div className="flex gap-4 mt-5">
+                      <a
+                        href={proj.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-mono text-sm underline hover:opacity-60 transition-opacity"
+                        style={{ color: "rgba(255,255,255,0.4)" }}
+                        data-testid={`project-github-${proj.id}`}
+                      >
+                        GitHub
+                      </a>
+                      {proj.demo && (
+                        <a
+                          href={proj.demo}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-mono text-sm underline hover:opacity-60 transition-opacity"
+                          style={{ color: proj.accent }}
+                          data-testid={`project-demo-${proj.id}`}
+                        >
+                          Live Demo
+                        </a>
                       )}
                     </div>
                   </motion.div>
