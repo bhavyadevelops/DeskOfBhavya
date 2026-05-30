@@ -4,62 +4,80 @@ import { motion, AnimatePresence } from "framer-motion";
 const PAPERS = [
   {
     id: 1,
-    title: "Startup Idea: LocalMesh",
-    preview: "Edge-first networking where your devices form their own mesh...",
+    title: "ResumeIQ: AI-powered ATS",
+    preview: "AI-powered recommendation engine for resumes, CVs...",
     rotation: -6,
     x: "25%",
     y: "58%",
-    body: `What if your devices didn't need to talk to a server in another country to talk to each other in the same room?
+    body: `The hiring process has always felt strangely asymmetric to me.
 
-LocalMesh is an edge-first networking layer that makes nearby devices form ad-hoc mesh networks for low-latency communication. Your phone and laptop in the same room should be able to sync at local network speeds — not round-trip to AWS and back.
+Candidates spend hours refining resumes, choosing words carefully, and presenting years of work on a single page. Yet most never get feedback. A rejection email arrives, or more often, nothing arrives at all.
 
-The architecture: each device runs a lightweight daemon that discovers peers via mDNS/DNS-SD, negotiates E2E encrypted tunnels using WireGuard, and maintains a distributed routing table using modified BATMAN-IV.
+The frustrating part isn't rejection. It's opacity.
 
-The killer use case: offline-first collaborative apps. Two people working on the same document in a coffee shop with spotty WiFi shouldn't need to be online to collaborate.
+You don't know whether your experience was weak, your formatting was poor, your keywords didn't match, or your application never made it past the first screening stage.
 
-Current status: PoC built in Go. 8ms round-trip between devices on the same LAN vs 200ms via cloud. The performance case is obvious.
+ResumeIQ started from a simple question:
 
-Next step: figure out NAT traversal for when devices are on different networks.`,
+What if candidates could see their resumes the way an ATS and recruiter see them?
+
+The goal isn't to game hiring systems. It's to make the process more transparent. If there are gaps, they should be visible. If a resume is strong, candidates should understand why. If improvements are possible, they should be actionable rather than mysterious.
+
+A resume shouldn't be a black box. Neither should the systems evaluating it.`,
   },
   {
     id: 2,
-    title: "On Building in Public",
-    preview: "The most terrifying thing I've done as a builder is ship something I wasn't sure about...",
+    title: "MRAI: Moral reasoning Agentic AI",
+    preview:
+      "If in a situation where death could be prevented by lying, how would AI justify...",
     rotation: 4,
     x: "40%",
     y: "62%",
-    body: `The most terrifying thing I've done as a builder is ship something I wasn't sure about and tell people about it.
+    body: `If in a situation where death could be prevented by lying, how would AI justify the decision?Most AI systems can explain what they know.
 
-Not because of the failure risk — I've shipped things privately that failed catastrophically and nobody cared. The terror is the vulnerability. Saying "I built this" means "I thought this was worth building."
+Far fewer can explain why they believe a decision is the right one.
 
-But building in public is the fastest feedback loop that exists. Every follower is a potential user. Every reply is a data point. Every roast is information you couldn't have paid for.
+That distinction becomes important the moment AI moves beyond answering questions and starts making recommendations, evaluating choices, or participating in decisions that affect people.
 
-I've learned more from Twitter threads about my projects than from any retrospective meeting.
+I'm interested in whether moral reasoning can be treated as a structured process rather than an abstract concept.
 
-The rule I've settled on: build in public early enough that failure is cheap, late enough that there's something real to react to. That window is usually right after you have a demo that works, not after you have a product that's ready.
+Not a system that claims to know what's right and wrong.
 
-"Ready" is a moving target. "Working demo" is a timestamp.`,
+A system that can identify stakeholders, surface trade-offs, analyze consequences, evaluate competing principles, and make its reasoning transparent enough for humans to challenge.
+
+The objective isn't to replace human judgment.
+
+It's to build AI that reasons in a way humans can inspect, question, and ultimately trust.
+
+Whether that's possible remains an open question.
+
+That's precisely why it's worth exploring.`,
   },
   {
     id: 3,
-    title: "Why I Write Code",
-    preview: "There's a specific feeling when code you wrote does something you didn't expect...",
+    title: "On Building Beyopnd Code",
+    preview:
+      "When I first started building projects, I assumed the hardest problems would be technical, but I was wrong...",
     rotation: -2,
     x: "52%",
     y: "62%",
-    body: `There's a specific feeling when code you wrote does something you didn't expect — not a bug, but an emergent behavior. Something that falls out of the logic you specified and turns out to be more interesting than what you meant.
+    body: `When I first started building projects, I assumed the hardest problems would be technical.
 
-I write code because it's the only medium where that happens.
+I was wrong.
 
-You can't accidentally invent a new word in prose. You can't accidentally discover a new melody in music. But in code, you can write rules and discover behaviors. The gap between specification and execution is where interesting things live.
+Most projects don't fail because the code is impossible to write. They fail because priorities change, requirements become unclear, deadlines slip, communication breaks down, or execution loses direction.
 
-I'm also drawn to code because it's honest. A program either works or it doesn't. You can argue about whether a paragraph is good writing forever. You cannot argue about whether the function returns the right value.
+The more builders I study, the more I realize that successful products are rarely the result of engineering alone.
 
-There's something clarifying about working in a medium where reality has the final say.
+They're the result of coordinated decisions made over time.
 
-The debugging sessions that break me are also the ones that teach me the most. Every mysterious failure is a gap in my mental model of how the computer works. Closing that gap is a small, reliable form of intellectual progress.
+That's what drew me toward program management.
 
-That reliability is rare. Most learning is fuzzy. Debugging is precise.`,
+Not because I want to spend less time building, but because I want to understand how ambitious ideas move from concept to execution without losing momentum along the way.
+
+Writing code creates possibilities.
+
+Managing projects turns those possibilities into outcomes.`,
   },
 ];
 
@@ -98,11 +116,15 @@ export default function Papers() {
             }}
           >
             {/* Ruled lines */}
-            {[0, 1, 2, 3, 4].map(i => (
+            {[0, 1, 2, 3, 4].map((i) => (
               <div
                 key={i}
                 className="w-full"
-                style={{ height: 1, background: "rgba(150,120,60,0.15)", marginBottom: 7 }}
+                style={{
+                  height: 1,
+                  background: "rgba(150,120,60,0.15)",
+                  marginBottom: 7,
+                }}
               />
             ))}
 
@@ -132,7 +154,10 @@ export default function Papers() {
         {selected !== null && (
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center"
-            style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
+            style={{
+              background: "rgba(0,0,0,0.7)",
+              backdropFilter: "blur(8px)",
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -154,7 +179,7 @@ export default function Papers() {
               animate={{ scale: 1, y: 0, rotate: 0 }}
               exit={{ scale: 0.85, y: 40, rotate: 3 }}
               transition={{ type: "spring", stiffness: 200, damping: 22 }}
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
               data-testid="paper-modal"
             >
               {/* Ruled lines in background */}
@@ -162,19 +187,32 @@ export default function Papers() {
                 <div
                   key={i}
                   className="absolute left-8 right-8"
-                  style={{ top: 32 + i * 26, height: 1, background: "rgba(150,120,60,0.12)" }}
+                  style={{
+                    top: 32 + i * 26,
+                    height: 1,
+                    background: "rgba(150,120,60,0.12)",
+                  }}
                 />
               ))}
 
-              {PAPERS.filter(p => p.id === selected).map(p => (
+              {PAPERS.filter((p) => p.id === selected).map((p) => (
                 <div key={p.id} className="relative z-10">
-                  <h2 className="font-serif text-2xl font-bold mb-2" style={{ color: "#2a1a0a" }}>
+                  <h2
+                    className="font-serif text-2xl font-bold mb-2"
+                    style={{ color: "#2a1a0a" }}
+                  >
                     {p.title}
                   </h2>
-                  <div className="font-mono text-xs mb-4" style={{ color: "#b8966e" }}>
+                  <div
+                    className="font-mono text-xs mb-4"
+                    style={{ color: "#b8966e" }}
+                  >
                     Bhavya's Desk — Notes
                   </div>
-                  <p className="font-sans text-sm leading-loose whitespace-pre-line" style={{ color: "#3a2a1a" }}>
+                  <p
+                    className="font-sans text-sm leading-loose whitespace-pre-line"
+                    style={{ color: "#3a2a1a" }}
+                  >
                     {p.body}
                   </p>
                 </div>
