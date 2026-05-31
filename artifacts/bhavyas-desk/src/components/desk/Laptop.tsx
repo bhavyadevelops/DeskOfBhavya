@@ -56,7 +56,7 @@ const PROJECTS: Project[] = [
       "Career Development",
       "Recruitment Tech",
     ],
-    github: "https://github.com/bhavyadevelops/AIATS",
+    github: "https://github.com/bhavyadevelops/ResumeIQ",
     demo: null,
     accent: "#f59e0b",
   },
