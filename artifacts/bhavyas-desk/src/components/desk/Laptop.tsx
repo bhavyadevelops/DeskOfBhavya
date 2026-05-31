@@ -57,7 +57,7 @@ const PROJECTS: Project[] = [
       "Recruitment Tech",
     ],
     github: "https://github.com/bhavyadevelops/ResumeIQ",
-    demo: null,
+    demo: "https://ai.studio/apps/b0681685-1c21-47c0-a770-679ef6859729?fullscreenApplet=true",
     accent: "#f59e0b",
   },
 ];
