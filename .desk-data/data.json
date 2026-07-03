@@ -1,36 +1,3 @@
 {
-  "notes": [
-    {
-      "id": 1,
-      "label": "Current Focus",
-      "text": "Ship Bhavya's Desk v1",
-      "color": "#F9E97A",
-      "rotation": -3,
-      "done": false
-    },
-    {
-      "id": 2,
-      "label": "Currently Building",
-      "text": "Project QUANTEX",
-      "color": "#A8E6B0",
-      "rotation": 2,
-      "done": false
-    },
-    {
-      "id": 3,
-      "label": "Learning Right Now",
-      "text": "Program Management",
-      "color": "#F9E97A",
-      "rotation": -1,
-      "done": false
-    },
-    {
-      "id": 4,
-      "label": "Next Goal",
-      "text": "ResumeIQ — AI-powered ATS improvement recommendation engine",
-      "color": "#FFD6A5",
-      "rotation": 3,
-      "done": false
-    }
-  ]
+  "notes": []
 }
