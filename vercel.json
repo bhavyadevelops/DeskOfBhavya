@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm --filter @workspace/bhavyas-desk run build",
+  "outputDirectory": "artifacts/bhavyas-desk/dist/public",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}
