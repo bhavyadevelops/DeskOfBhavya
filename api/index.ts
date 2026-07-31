@@ -12,6 +12,6 @@
  *   Vercel edge → @vercel/node runtime → this file → Express app (app.ts)
  *   → pinoHttp middleware → cors → express.json → router (/api/*)
  */
-import app from "../artifacts/api-server/src/app.js";
+import app from "../artifacts/api-server/src/app";
 
 export default app;
