@@ -1,56 +1,27 @@
-import { Router, type IRouter, type Request, type Response } from "express";
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
-import { join } from "path";
+import { Router } from "express";
+import type { Request, Response } from "express";
 
-const DATA_DIR = "/home/runner/workspace/.desk-data";
-const DATA_FILE = join(DATA_DIR, "data.json");
+import { getAppData, setAppData } from "../lib/app-data";
 
-if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+const router = Router();
 
-function readData(): Record<string, unknown> {
-  try {
-    if (!existsSync(DATA_FILE)) return {};
-    return JSON.parse(readFileSync(DATA_FILE, "utf-8")) as Record<string, unknown>;
-  } catch {
-    return {};
-  }
-}
-
-function writeData(data: Record<string, unknown>): void {
-  writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-}
-
-const router: IRouter = Router();
-
-router.get("/notes", (_req: Request, res: Response) => {
-  const data = readData();
-  if (data.notes) {
-    res.json(data.notes);
-  } else {
-    res.json(null);
-  }
+router.get("/notes", async (_req: Request, res: Response) => {
+  const notes = await getAppData("notes");
+  res.json(notes);
 });
 
-router.put("/notes", (req: Request, res: Response) => {
-  const data = readData();
-  data.notes = req.body;
-  writeData(data);
+router.put("/notes", async (req: Request, res: Response) => {
+  await setAppData("notes", req.body);
   res.json({ ok: true });
 });
 
-router.get("/books", (_req: Request, res: Response) => {
-  const data = readData();
-  if (data.books) {
-    res.json(data.books);
-  } else {
-    res.json(null);
-  }
+router.get("/books", async (_req: Request, res: Response) => {
+  const books = await getAppData("books");
+  res.json(books);
 });
 
-router.put("/books", (req: Request, res: Response) => {
-  const data = readData();
-  data.books = req.body;
-  writeData(data);
+router.put("/books", async (req: Request, res: Response) => {
+  await setAppData("books", req.body);
   res.json({ ok: true });
 });
 
