@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import hackmitPhoto from "@assets/DSC00674_1780148259968.JPG";
+import hackmitPhoto from "@assets/DSC00674_1780148259968.jpg";
 import mcmCert from "@assets/mcm_cert_1780148612407.png";
 
 interface Achievement {

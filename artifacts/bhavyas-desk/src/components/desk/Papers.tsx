@@ -107,13 +107,13 @@ export default function Papers() {
           <div
             className="rounded-sm"
             style={{
-              width: 120,
-              padding: "12px 12px 16px",
-              background: "linear-gradient(160deg, #faf6ec 0%, #f5eedc 100%)",
-              rotate: paper.rotation,
-              boxShadow: "2px 4px 16px rgba(0,0,0,0.35)",
-              border: "1px solid rgba(180,160,100,0.3)",
-            }}
+  width: 120,
+  padding: "12px 12px 16px",
+  background: "linear-gradient(160deg, #faf6ec 0%, #f5eedc 100%)",
+  transform: `rotate(${paper.rotation}deg)`,
+  boxShadow: "2px 4px 16px rgba(0,0,0,0.35)",
+  border: "1px solid rgba(180,160,100,0.3)",
+}}
           >
             {/* Ruled lines */}
             {[0, 1, 2, 3, 4].map((i) => (
