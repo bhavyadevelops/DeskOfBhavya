@@ -5,7 +5,7 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "functions": {
     "api/index.ts": {
-      "runtime": "@vercel/node"
+      "runtime": "@vercel/node@5.9.2"
     }
   },
   "rewrites": [
