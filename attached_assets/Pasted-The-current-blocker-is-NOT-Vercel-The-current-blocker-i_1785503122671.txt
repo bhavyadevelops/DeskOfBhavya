@@ -1,0 +1,89 @@
+The current blocker is NOT Vercel.
+
+The current blocker is a TypeScript build failure.
+
+DO NOT make any deployment-related changes until this build error is resolved.
+
+Current error:
+
+TS2305:
+Module "@workspace/db/schema" has no exported member "appDataTable"
+
+Rules:
+
+1. Do NOT create a new database schema.
+2. Do NOT guess table definitions.
+3. Do NOT create migrations.
+4. Do NOT modify PostgreSQL.
+5. Do NOT change any API routes.
+6. Do NOT change any frontend code.
+7. Do NOT change business logic.
+8. Do NOT change Drizzle configuration unless absolutely required.
+
+Instead, investigate WHY this export is missing.
+
+Specifically:
+
+- Search the entire repository for:
+  - appDataTable
+  - app-data.ts
+  - pgTable("app_data"
+  - export * from "./app-data"
+  - export { appDataTable }
+
+Determine whether:
+
+A)
+The schema file already exists but is not exported.
+
+OR
+
+B)
+The schema file was accidentally deleted.
+
+OR
+
+C)
+The import path is incorrect.
+
+If the schema file exists:
+
+- Restore only the missing export.
+
+If the schema file does NOT exist:
+
+- Check git history.
+- Check previous commits.
+- Check untracked files.
+- Check ignored files.
+- Check whether the file was accidentally removed.
+
+Do NOT recreate the schema from memory unless there is absolutely no recoverable source.
+
+Only if every recovery method fails, stop and explain exactly why recovery is impossible.
+
+After fixing ONLY this issue:
+
+Run:
+
+pnpm install --frozen-lockfile
+
+pnpm typecheck
+
+pnpm build
+
+Do NOT continue unless every command succeeds.
+
+Only after the entire workspace builds successfully should you proceed to the Vercel serverless migration.
+
+Finally provide:
+
+1. Root cause of the missing export.
+2. Every file modified.
+3. Why each modification was necessary.
+4. Complete build logs.
+5. Whether the project is now ready for the Vercel migration.
+
+Do not skip verification.
+Do not assume success.
+Prove it by running the commands.
